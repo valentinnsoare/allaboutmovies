@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: MovieInfoService
+
+  data:
+    mongodb:
+      uri: mongodb://admin:admin@localhost:27017/movie-info-db?authSource=admin
+      host: localhost
+      port: 27017
+      database: movie-info-db
+      username: admin
+      password: admin
+
+
