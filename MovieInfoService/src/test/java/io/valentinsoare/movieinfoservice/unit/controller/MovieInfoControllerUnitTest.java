@@ -157,13 +157,26 @@ public class MovieInfoControllerUnitTest {
         String searchedForId = "1";
 
         when(movieInfoServiceMock.deleteMovieInfoById(isA(String.class)))
-                .thenReturn(Mono.just("Movie deleted"));
+                .thenReturn(
+                        Mono.just(
+                                MovieInfo.builder()
+                                        .name("The Dark Knight")
+                                        .year(2008)
+                                        .cast(Arrays.asList("Christian Bale", "Heath Ledger"))
+                                        .id(searchedForId)
+                                        .releaseDate(LocalDate.parse("2008-07-18"))
+                                        .build())
+                );
 
         webTestClient.delete()
                 .uri(String.format("/api/v1/movieInfos/id/%s", searchedForId))
                 .exchange()
-                .expectStatus().isNoContent()
-                .expectBody(String.class)
-                .isEqualTo("Movie deleted");
+                .expectStatus()
+                .isOk()
+                .expectBody(MovieInfo.class)
+                .consumeWith(movieInfo -> {
+                    MovieInfo responseBody = movieInfo.getResponseBody();
+                    assert responseBody == null;
+                });
     }
 }

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,66 +25,66 @@ public class MovieInfoController {
         this.movieInfoService = movieInfoService;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/movieInfos")
-    public Mono<MovieInfo> addMovieInfo(@RequestBody @Valid MovieInfo movieInfo) {
-        return movieInfoService.addMovieInfo(movieInfo);
+    public Mono<ResponseEntity<MovieInfo>> addMovieInfo(@RequestBody @Valid MovieInfo movieInfo) {
+        return movieInfoService.addMovieInfo(movieInfo)
+                .map(m -> new ResponseEntity<>(m, HttpStatus.CREATED));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/id/{movieId}")
-    public Mono<MovieInfo> getMovieInfoById(@PathVariable @NotNull String movieId) {
+    public Mono<ResponseEntity<MovieInfo>> getMovieInfoById(@PathVariable @NotNull String movieId) {
         return movieInfoService.getMovieInfoById(movieId)
                 .switchIfEmpty(
                         Mono.error(
                                 new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId))
                         )
-                );
+                )
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/all")
-    public Flux<MovieInfo> getAllMovieInfos() {
+    public Flux<ResponseEntity<MovieInfo>> getAllMovieInfos() {
         return movieInfoService.getAllMovieInfos()
                 .switchIfEmpty(
                         Flux.error(new NoElementsException("movieInfo"))
-                );
+                )
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/count")
-    public Mono<Long> countAll() {
-        return movieInfoService.countAll();
+    public Mono<ResponseEntity<Long>> countAll() {
+        return movieInfoService.countAll()
+                .map(count -> new ResponseEntity<>(count, HttpStatus.OK));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/name/{name}")
-    public Mono<MovieInfo> getMovieByName(@PathVariable @NotNull String name) {
+    public Mono<ResponseEntity<MovieInfo>> getMovieByName(@PathVariable @NotNull String name) {
         return movieInfoService.getMovieByName(name)
                 .switchIfEmpty(Mono.error(
                         new ResourceNotFoundException("movieInfo", Map.of("name", name)))
-                );
+                )
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/movieInfos/id/{movieId}")
-    public Mono<MovieInfo> updateMovieInfoById(
+    public Mono<ResponseEntity<MovieInfo>> updateMovieInfoById(
             @PathVariable @NotNull String movieId,
             @RequestBody @Valid MovieInfo movieInfo
     ) {
         return movieInfoService.updateMovieInfoById(movieId, movieInfo)
                 .switchIfEmpty(Mono.error(
                         new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
-                );
+                )
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/movieInfos/id/{movieId}")
-    public Mono<String> deleteMovieInfoById(@PathVariable @NotNull String movieId) {
+    public Mono<ResponseEntity<String>> deleteMovieInfoById(@PathVariable @NotNull String movieId) {
         return movieInfoService.deleteMovieInfoById(movieId)
                 .switchIfEmpty(Mono.error(
                         new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
                 )
-                .then(Mono.just("MovieInfo with id: " + movieId + " deleted successfully."));
+                .then(Mono.just("MovieInfo with id: " + movieId + " deleted successfully."))
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 }
