@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -165,5 +167,24 @@ public class MovieInfoControllerIntegrationTest {
                 .uri(String.format("/api/v1/movieInfos/id/%s", movieInfoId))
                 .exchange()
                 .expectStatus().isNoContent();
+    }
+
+    @Test
+    void testGetAllMovieInfosByYear() {
+        Integer year = 2010;
+
+        URI toRequestByYear = UriComponentsBuilder.fromUriString("/api/v1/movieInfos/all")
+                .queryParam("year", year)
+                .buildAndExpand().toUri();
+
+        webTestClient.get()
+                .uri(toRequestByYear)
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBodyList(MovieInfo.class)
+                .value(movieInfos -> {
+                    assert movieInfos != null;
+                    assert movieInfos.size() == 1;
+                });
     }
 }
