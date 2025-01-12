@@ -34,12 +34,12 @@ public class MovieInfoController {
     @GetMapping("/movieInfos/id/{movieId}")
     public Mono<ResponseEntity<MovieInfo>> getMovieInfoById(@PathVariable @NotNull String movieId) {
         return movieInfoService.getMovieInfoById(movieId)
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK))
                 .switchIfEmpty(
                         Mono.error(
                                 new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId))
                         )
-                )
-                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
+                );
     }
 
     @GetMapping("/movieInfos/all")
@@ -53,15 +53,19 @@ public class MovieInfoController {
     @GetMapping("/movieInfos/count")
     public Mono<ResponseEntity<Long>> countAll() {
         return movieInfoService.countAll()
-                .map(count -> new ResponseEntity<>(count, HttpStatus.OK));
+                .map(count -> new ResponseEntity<>(count, HttpStatus.OK))
+                .switchIfEmpty(
+                        Mono.error(new NoElementsException("movieInfo"))
+                );
     }
 
     @GetMapping("/movieInfos/name/{name}")
     public Mono<ResponseEntity<MovieInfo>> getMovieByName(@PathVariable @NotNull String name) {
         return movieInfoService.getMovieByName(name)
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK))
                 .switchIfEmpty(Mono.error(
-                        new ResourceNotFoundException("movieInfo", Map.of("name", name))))
-                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
+                        new ResourceNotFoundException("movieInfo", Map.of("name", name)))
+                );
     }
 
     @PutMapping("/movieInfos/id/{movieId}")
@@ -70,18 +74,19 @@ public class MovieInfoController {
             @RequestBody @Valid MovieInfo movieInfo
     ) {
         return movieInfoService.updateMovieInfoById(movieId, movieInfo)
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK))
                 .switchIfEmpty(Mono.error(
-                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId))))
-                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
+                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
+                );
     }
 
     @DeleteMapping("/movieInfos/id/{movieId}")
     public Mono<ResponseEntity<String>> deleteMovieInfoById(@PathVariable @NotNull String movieId) {
         return movieInfoService.deleteMovieInfoById(movieId)
-                .switchIfEmpty(Mono.error(
-                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId))))
                 .map(m -> new ResponseEntity<>(
-                        String.format("MovieInfo with id %s has been deleted", movieId), HttpStatus.OK)
+                        String.format("MovieInfo with id %s has been deleted", movieId), HttpStatus.OK))
+                .switchIfEmpty(Mono.error(
+                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
                 );
     }
 }
