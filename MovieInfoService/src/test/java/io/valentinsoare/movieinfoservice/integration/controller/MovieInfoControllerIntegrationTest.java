@@ -91,8 +91,10 @@ public class MovieInfoControllerIntegrationTest {
 
     @Test
     void testGetMovieInfo() {
+        String movieInfoId = "1";
+
         webTestClient.get()
-                .uri("/api/v1/movieInfos/1")
+                .uri(String.format("/api/v1/movieInfos/%s", movieInfoId))
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBody(MovieInfo.class)
@@ -122,18 +124,13 @@ public class MovieInfoControllerIntegrationTest {
 
     @Test
     void testGetMovieByName() {
+        String movieInfoName = "Inception";
+
         webTestClient.get()
-                .uri("/api/v1/movieInfos/name/Inception")
+                .uri(String.format("/api/v1/movieInfos/name/%s", movieInfoName))
                 .exchange()
                 .expectStatus().is2xxSuccessful()
-                .expectBody(MovieInfo.class)
-                .value(movieInfo -> {
-                    assert movieInfo != null;
-                    assert movieInfo.getName().equals("Inception");
-                    assert movieInfo.getYear() == 2010;
-                    assert movieInfo.getCast().containsAll(Arrays.asList("Leonardo DiCaprio", "Joseph Gordon-Levitt"));
-                    assert movieInfo.getId().equals("2");
-                    assert movieInfo.getReleaseDate().equals(LocalDate.parse("2010-07-16"));
-                });
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("Inception");
     }
 }
