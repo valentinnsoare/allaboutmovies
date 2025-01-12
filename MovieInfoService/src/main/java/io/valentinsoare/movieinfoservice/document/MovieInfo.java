@@ -14,7 +14,7 @@ import java.util.List;
 
 @Data
 @Builder
-@Document
+@Document()
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovieInfo {

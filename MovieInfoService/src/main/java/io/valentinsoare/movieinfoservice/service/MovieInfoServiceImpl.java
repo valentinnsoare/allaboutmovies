@@ -5,6 +5,7 @@ import io.valentinsoare.movieinfoservice.repository.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -56,10 +57,23 @@ public class MovieInfoServiceImpl implements MovieInfoService {
     }
 
     @Override
+    @Transactional
+    public Mono<String> deleteMovieInfoById(String movieId) {
+       return movieInfoRepository.findById(movieId)
+                .defaultIfEmpty(new MovieInfo())
+                .flatMap(movieInfo -> {
+                    if (movieInfo.getId() == null) {
+                        return Mono.error(new RuntimeException("Movie not found"));
+                    }
+
+                    return movieInfoRepository.delete(movieInfo)
+                            .then(Mono.just("Movie deleted"));
+                });
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Mono<Long> countAll() {
         return movieInfoRepository.count();
     }
-
-
 }

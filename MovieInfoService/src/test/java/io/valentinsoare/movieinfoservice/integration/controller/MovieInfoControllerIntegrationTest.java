@@ -94,7 +94,7 @@ public class MovieInfoControllerIntegrationTest {
         String movieInfoId = "1";
 
         webTestClient.get()
-                .uri(String.format("/api/v1/movieInfos/%s", movieInfoId))
+                .uri(String.format("/api/v1/movieInfos/id/%s", movieInfoId))
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBody(MovieInfo.class)
@@ -103,7 +103,7 @@ public class MovieInfoControllerIntegrationTest {
                     assert movieInfo.getName().equals("The Dark Knight");
                     assert movieInfo.getYear() == 2008;
                     assert movieInfo.getCast().containsAll(Arrays.asList("Christian Bale", "Heath Ledger"));
-                    assert movieInfo.getId().equals("1");
+                    assert movieInfo.getId().equals(movieInfoId);
                     assert movieInfo.getReleaseDate().equals(LocalDate.parse("2008-07-18"));
                 });
     }
@@ -148,12 +148,22 @@ public class MovieInfoControllerIntegrationTest {
                         .releaseDate(LocalDate.parse("2010-07-16"))
                         .build())
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().is2xxSuccessful()
                 .expectBody(MovieInfo.class)
                 .value(movieInfo -> {
                     assert movieInfo != null;
                     assert movieInfo.getName().equals("Inception");
                     assert movieInfo.getCast().containsAll(Arrays.asList("Leonardo DiCaprio", "Joseph Gordon-Levitt", "Tom Hardy"));
                 });
+    }
+
+    @Test
+    void testDeleteMovieInfoById() {
+        String movieInfoId = "3";
+
+        webTestClient.delete()
+                .uri(String.format("/api/v1/movieInfos/id/%s", movieInfoId))
+                .exchange()
+                .expectStatus().isNoContent();
     }
 }

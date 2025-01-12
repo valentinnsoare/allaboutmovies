@@ -10,5 +10,6 @@ public interface MovieInfoService {
     Mono<MovieInfo> getMovieByName(String name);
     Flux<MovieInfo> getAllMovieInfos();
     Mono<MovieInfo> updateMovieInfoById(String movieId, MovieInfo movieInfo);
+    Mono<String> deleteMovieInfoById(String movieId);
     Mono<Long> countAll();
 }

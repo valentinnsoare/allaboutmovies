@@ -27,8 +27,8 @@ public class MovieInfoController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/movieInfos/{movieId}")
-    public Mono<MovieInfo> getMovieInfo(@PathVariable @NotNull String movieId) {
+    @GetMapping("/movieInfos/id/{movieId}")
+    public Mono<MovieInfo> getMovieInfoById(@PathVariable @NotNull String movieId) {
         return movieInfoService.getMovieInfoById(movieId)
                 .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
     }
@@ -53,7 +53,7 @@ public class MovieInfoController {
                 .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/movieInfos/id/{movieId}")
     public Mono<MovieInfo> updateMovieInfoById(
             @PathVariable @NotNull String movieId,
@@ -61,5 +61,11 @@ public class MovieInfoController {
     ) {
         return movieInfoService.updateMovieInfoById(movieId, movieInfo)
                 .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/movieInfos/id/{movieId}")
+    public Mono<String> deleteMovieInfoById(@PathVariable @NotNull String movieId) {
+        return movieInfoService.deleteMovieInfoById(movieId);
     }
 }
