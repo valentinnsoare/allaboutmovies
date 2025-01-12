@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 
 @AutoConfigureWebTestClient
@@ -93,7 +94,7 @@ public class MovieInfoControllerUnitTest {
                 .releaseDate(LocalDate.parse("2008-07-18"))
                 .build();
 
-        when(movieInfoServiceMock.getMovieInfoById(searchedForId))
+        when(movieInfoServiceMock.getMovieInfoById(isA(String.class)))
                 .thenReturn(Mono.just(darkKnight));
 
         webTestClient.get()
@@ -116,7 +117,7 @@ public class MovieInfoControllerUnitTest {
                 .releaseDate(LocalDate.parse("2008-07-18"))
                 .build();
 
-        when(movieInfoServiceMock.getMovieByName(searchedForName))
+        when(movieInfoServiceMock.getMovieByName(isA(String.class)))
                 .thenReturn(Mono.just(darkKnight));
 
         webTestClient.get()
@@ -133,13 +134,13 @@ public class MovieInfoControllerUnitTest {
 
         MovieInfo darkKnight = MovieInfo.builder()
                 .name("The Dark Knight")
-                .year(2008)
+                .year(2021)
                 .cast(Arrays.asList("Christian Bale", "Heath Ledger", "Morgan Freeman"))
                 .id(searchedForId)
-                .releaseDate(LocalDate.parse("2020-01-01"))
+                .releaseDate(LocalDate.parse("2021-01-01"))
                 .build();
 
-        when(movieInfoServiceMock.updateMovieInfoById(searchedForId, darkKnight))
+        when(movieInfoServiceMock.updateMovieInfoById(isA(String.class), isA(MovieInfo.class)))
                 .thenReturn(Mono.just(darkKnight));
 
         webTestClient.put()
@@ -155,7 +156,7 @@ public class MovieInfoControllerUnitTest {
     void deleteMovieInfoById() {
         String searchedForId = "1";
 
-        when(movieInfoServiceMock.deleteMovieInfoById(searchedForId))
+        when(movieInfoServiceMock.deleteMovieInfoById(isA(String.class)))
                 .thenReturn(Mono.just("Movie deleted"));
 
         webTestClient.delete()
