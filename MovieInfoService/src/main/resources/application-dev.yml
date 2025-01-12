@@ -15,6 +15,7 @@ server:
 
 logging:
   pattern:
+    level: ${CONSOLE_LOGGING_LEVEL:INFO}
     console: ${CONSOLE_LOGGING_PATTERN:%green(%d{yyyy-MM-dd HH:mm:ss}) %blue(%-5level) %red([%thread]) %yellow(%logger{36}) - %msg%n}
 
 
