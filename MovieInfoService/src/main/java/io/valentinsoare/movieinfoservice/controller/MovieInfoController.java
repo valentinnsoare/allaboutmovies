@@ -1,6 +1,7 @@
 package io.valentinsoare.movieinfoservice.controller;
 
 import io.valentinsoare.movieinfoservice.document.MovieInfo;
+import io.valentinsoare.movieinfoservice.exception.ResourceNotFoundException;
 import io.valentinsoare.movieinfoservice.service.MovieInfoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -29,10 +32,10 @@ public class MovieInfoController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/id/{movieId}")
     public Mono<MovieInfo> getMovieInfoById(@PathVariable @NotNull String movieId) {
-        String message = String.format("Movie info not found! with id: %s", movieId);
-
         return movieInfoService.getMovieInfoById(movieId)
-                .switchIfEmpty(Mono.error(new RuntimeException(message)));
+                .switchIfEmpty(
+                        Mono.error(new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
+                );
     }
 
     @ResponseStatus(HttpStatus.OK)

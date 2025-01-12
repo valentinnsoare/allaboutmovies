@@ -16,11 +16,13 @@ import java.util.TreeMap;
 @ControllerAdvice
 public class MovieInfoCustomExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorMessage> handleGlobalException(RuntimeException e) {
+    @ExceptionHandler({
+            ResourceNotFoundException.class
+    })
+    public ResponseEntity<ErrorMessage> handleGlobalException(ResourceNotFoundException e) {
         ErrorMessage anErrorOccurred = ErrorMessage.builder()
                 .message(e.getLocalizedMessage())
-                .details(e.getClass().toString())
+                .details("Given resource from the user was not found when request was processed.")
                 .timestamp(Instant.now())
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .build();
