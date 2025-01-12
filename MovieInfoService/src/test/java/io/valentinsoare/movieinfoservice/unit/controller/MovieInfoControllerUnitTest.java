@@ -103,4 +103,66 @@ public class MovieInfoControllerUnitTest {
                 .expectBody(MovieInfo.class)
                 .isEqualTo(darkKnight);
     }
+
+    @Test
+    void getMovieInfoByName() {
+        String searchedForName = "The Dark Knight";
+
+        MovieInfo darkKnight = MovieInfo.builder()
+                .name(searchedForName)
+                .year(2008)
+                .cast(Arrays.asList("Christian Bale", "Heath Ledger"))
+                .id("1")
+                .releaseDate(LocalDate.parse("2008-07-18"))
+                .build();
+
+        when(movieInfoServiceMock.getMovieByName(searchedForName))
+                .thenReturn(Mono.just(darkKnight));
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movieInfos/name/%s", searchedForName))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(MovieInfo.class)
+                .isEqualTo(darkKnight);
+    }
+
+    @Test
+    void updateMovieInfoById() {
+        String searchedForId = "1";
+
+        MovieInfo darkKnight = MovieInfo.builder()
+                .name("The Dark Knight")
+                .year(2008)
+                .cast(Arrays.asList("Christian Bale", "Heath Ledger", "Morgan Freeman"))
+                .id(searchedForId)
+                .releaseDate(LocalDate.parse("2020-01-01"))
+                .build();
+
+        when(movieInfoServiceMock.updateMovieInfoById(searchedForId, darkKnight))
+                .thenReturn(Mono.just(darkKnight));
+
+        webTestClient.put()
+                .uri(String.format("/api/v1/movieInfos/id/%s", searchedForId))
+                .bodyValue(darkKnight)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(MovieInfo.class)
+                .isEqualTo(darkKnight);
+    }
+
+    @Test
+    void deleteMovieInfoById() {
+        String searchedForId = "1";
+
+        when(movieInfoServiceMock.deleteMovieInfoById(searchedForId))
+                .thenReturn(Mono.just("Movie deleted"));
+
+        webTestClient.delete()
+                .uri(String.format("/api/v1/movieInfos/id/%s", searchedForId))
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody(String.class)
+                .isEqualTo("Movie deleted");
+    }
 }
