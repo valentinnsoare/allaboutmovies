@@ -43,12 +43,11 @@ public class MovieInfoController {
     }
 
     @GetMapping("/movieInfos/all")
-    public Flux<ResponseEntity<MovieInfo>> getAllMovieInfos() {
+    public Flux<MovieInfo> getAllMovieInfos() {
         return movieInfoService.getAllMovieInfos()
                 .switchIfEmpty(
                         Flux.error(new NoElementsException("movieInfo"))
-                )
-                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
+                );
     }
 
     @GetMapping("/movieInfos/count")
@@ -61,8 +60,7 @@ public class MovieInfoController {
     public Mono<ResponseEntity<MovieInfo>> getMovieByName(@PathVariable @NotNull String name) {
         return movieInfoService.getMovieByName(name)
                 .switchIfEmpty(Mono.error(
-                        new ResourceNotFoundException("movieInfo", Map.of("name", name)))
-                )
+                        new ResourceNotFoundException("movieInfo", Map.of("name", name))))
                 .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
@@ -73,8 +71,7 @@ public class MovieInfoController {
     ) {
         return movieInfoService.updateMovieInfoById(movieId, movieInfo)
                 .switchIfEmpty(Mono.error(
-                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
-                )
+                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId))))
                 .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
@@ -82,9 +79,9 @@ public class MovieInfoController {
     public Mono<ResponseEntity<String>> deleteMovieInfoById(@PathVariable @NotNull String movieId) {
         return movieInfoService.deleteMovieInfoById(movieId)
                 .switchIfEmpty(Mono.error(
-                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
-                )
-                .then(Mono.just("MovieInfo with id: " + movieId + " deleted successfully."))
-                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
+                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId))))
+                .map(m -> new ResponseEntity<>(
+                        String.format("MovieInfo with id %s has been deleted", movieId), HttpStatus.OK)
+                );
     }
 }

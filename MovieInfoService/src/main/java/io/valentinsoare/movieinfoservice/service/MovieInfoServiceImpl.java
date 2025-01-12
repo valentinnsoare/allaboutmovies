@@ -64,7 +64,10 @@ public class MovieInfoServiceImpl implements MovieInfoService {
     @Transactional
     public Mono<MovieInfo> deleteMovieInfoById(String movieId) {
        return movieInfoRepository.findById(movieId)
-                .switchIfEmpty(Mono.empty());
+                .switchIfEmpty(Mono.empty())
+                .flatMap(existingMovieInfo -> movieInfoRepository.delete(existingMovieInfo)
+                        .thenReturn(existingMovieInfo)
+                );
     }
 
     @Override
