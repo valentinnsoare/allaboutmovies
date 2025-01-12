@@ -1,13 +1,16 @@
 package io.valentinsoare.movieinfoservice.service;
 
 import io.valentinsoare.movieinfoservice.document.MovieInfo;
+import io.valentinsoare.movieinfoservice.exception.NoElementsException;
+import io.valentinsoare.movieinfoservice.exception.ResourceNotFoundException;
 import io.valentinsoare.movieinfoservice.repository.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @Service
 public class MovieInfoServiceImpl implements MovieInfoService {
@@ -26,14 +29,51 @@ public class MovieInfoServiceImpl implements MovieInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Mono<MovieInfo> getMovieInfo(String movieId) {
+    public Mono<MovieInfo> getMovieInfoById(String movieId) {
         return movieInfoRepository.findById(movieId);
     }
 
     @Override
     @Transactional(readOnly = true)
+    public Mono<MovieInfo> getMovieByName(String name) {
+        return movieInfoRepository.getMovieByName(name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Flux<MovieInfo> getAllMovieInfos() {
-        return movieInfoRepository.findAllBy(Pageable.unpaged());
+        return movieInfoRepository.findAll()
+                .switchIfEmpty(Flux.empty());
+    }
+
+    @Override
+    @Transactional
+    public Mono<MovieInfo> updateMovieInfoById(String movieId, MovieInfo movieInfo) {
+        return movieInfoRepository.findById(movieId)
+                .flatMap(existingMovieInfo -> {
+                    existingMovieInfo.setName(movieInfo.getName());
+                    existingMovieInfo.setCast(movieInfo.getCast());
+                    existingMovieInfo.setYear(movieInfo.getYear());
+                    existingMovieInfo.setReleaseDate(movieInfo.getReleaseDate());
+
+                    return movieInfoRepository.save(existingMovieInfo);
+                });
+    }
+
+    @Override
+    @Transactional
+    public Mono<MovieInfo> deleteMovieInfoById(String movieId) {
+       return movieInfoRepository.findById(movieId)
+               .flatMap(existingMovieInfo -> movieInfoRepository.delete(existingMovieInfo)
+                       .thenReturn(existingMovieInfo))
+               .switchIfEmpty(Mono.empty());
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Flux<MovieInfo> getAllMoviesInfosByYear(Integer year) {
+        return movieInfoRepository.findByYear(year);
     }
 
     @Override
