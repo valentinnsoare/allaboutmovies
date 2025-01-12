@@ -10,6 +10,6 @@ public interface MovieInfoRepository extends ReactiveMongoRepository<MovieInfo, 
     @Query("{ 'name' : ?0 }")
     Mono<MovieInfo> getMovieByName(String name);
 
-    @Query("{ 'year' : ?0 }")
+    @Query(value = "{ 'year' : ?0 }", sort = "{ 'id' : 1 }")
     Flux<MovieInfo> findByYear(Integer year);
 }

@@ -166,7 +166,7 @@ public class MovieInfoControllerIntegrationTest {
         webTestClient.delete()
                 .uri(String.format("/api/v1/movieInfos/id/%s", movieInfoId))
                 .exchange()
-                .expectStatus().isNoContent();
+                .expectStatus().isOk();
     }
 
     @Test
