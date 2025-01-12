@@ -1,5 +1,6 @@
 package io.valentinsoare.movieinfoservice.document;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +19,16 @@ import java.util.List;
 public class MovieInfo {
     @Id
     private String id;
+
+    @Size(max = 100, message = "Name should have at most 100 characters")
     private String name;
+
+    @Size(max = 4, message = "Year should have at most 4 characters")
     private Integer year;
+
+    @Size(max = 100, message = "Cast should have at most 100 characters")
     private List<String> cast;
+
+    @Size(max = 10, message = "Release date should have at most 10 characters")
     private LocalDate releaseDate;
 }
