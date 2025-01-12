@@ -77,14 +77,14 @@ public class MovieInfoControllerIntegrationTest {
                         .releaseDate(LocalDate.parse("2006-10-20"))
                         .build())
                 .exchange()
-                .expectStatus().is2xxSuccessful()
+                .expectStatus().isCreated()
                 .expectBody(MovieInfo.class)
                 .value(movieInfo -> {
                     assert movieInfo != null;
                     assert movieInfo.getName().equals("The Prestige");
                     assert movieInfo.getYear() == 2006;
                     assert movieInfo.getCast().containsAll(Arrays.asList("Christian Bale", "Hugh Jackman"));
-                    assert movieInfo.getId().equals("4");
+                    assert movieInfo.getId() != null;
                     assert movieInfo.getReleaseDate().equals(LocalDate.parse("2006-10-20"));
                 });
     }

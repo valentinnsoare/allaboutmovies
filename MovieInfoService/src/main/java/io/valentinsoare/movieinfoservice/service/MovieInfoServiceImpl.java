@@ -3,7 +3,6 @@ package io.valentinsoare.movieinfoservice.service;
 import io.valentinsoare.movieinfoservice.document.MovieInfo;
 import io.valentinsoare.movieinfoservice.repository.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -26,14 +25,14 @@ public class MovieInfoServiceImpl implements MovieInfoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Mono<MovieInfo> getMovieInfo(String movieId) {
+    public Mono<MovieInfo> getMovieInfoById(String movieId) {
         return movieInfoRepository.findById(movieId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Flux<MovieInfo> getAllMovieInfos() {
-        return movieInfoRepository.findAllBy(Pageable.unpaged());
+        return movieInfoRepository.findAll();
     }
 
     @Override

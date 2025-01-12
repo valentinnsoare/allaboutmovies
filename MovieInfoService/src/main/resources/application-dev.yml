@@ -1,7 +1,6 @@
 spring:
   application:
-    name: MovieInfoService
-
+    name: ${APPLICATION_NAME:MovieInfoService}
   data:
     mongodb:
       uri: mongodb://admin:admin@localhost:27017/movie-info-db?authSource=admin
@@ -10,5 +9,12 @@ spring:
       database: movie-info-db
       username: admin
       password: admin
+
+server:
+  port: ${APPLICATION_PORT:8080}
+
+logging:
+  pattern:
+    console: ${CONSOLE_LOGGING_PATTERN:%green(%d{yyyy-MM-dd HH:mm:ss}) %blue(%-5level) %red([%thread]) %yellow(%logger{36}) - %msg%n}
 
 

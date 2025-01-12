@@ -5,9 +5,6 @@ import io.valentinsoare.movieinfoservice.service.MovieInfoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -32,12 +29,18 @@ public class MovieInfoController {
     @GetMapping("/movieInfos/{movieId}")
     @ResponseStatus(HttpStatus.OK)
     public Mono<MovieInfo> getMovieInfo(@PathVariable @NotNull String movieId) {
-        return movieInfoService.getMovieInfo(movieId);
+        return movieInfoService.getMovieInfoById(movieId);
     }
 
     @GetMapping("/movieInfos/all")
     @ResponseStatus(HttpStatus.OK)
     public Flux<MovieInfo> getAllMovieInfos() {
         return movieInfoService.getAllMovieInfos();
+    }
+
+    @GetMapping("/movieInfos/count")
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Long> countAll() {
+        return movieInfoService.countAll();
     }
 }
