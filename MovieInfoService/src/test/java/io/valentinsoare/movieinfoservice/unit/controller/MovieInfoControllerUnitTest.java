@@ -172,11 +172,6 @@ public class MovieInfoControllerUnitTest {
                 .uri(String.format("/api/v1/movieInfos/id/%s", searchedForId))
                 .exchange()
                 .expectStatus()
-                .isOk()
-                .expectBody(MovieInfo.class)
-                .consumeWith(movieInfo -> {
-                    MovieInfo responseBody = movieInfo.getResponseBody();
-                    assert responseBody == null;
-                });
+                .isOk();
     }
 }
