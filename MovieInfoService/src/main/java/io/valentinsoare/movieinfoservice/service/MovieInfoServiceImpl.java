@@ -1,12 +1,15 @@
 package io.valentinsoare.movieinfoservice.service;
 
 import io.valentinsoare.movieinfoservice.document.MovieInfo;
+import io.valentinsoare.movieinfoservice.exception.ResourceNotFoundException;
 import io.valentinsoare.movieinfoservice.repository.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @Service
 public class MovieInfoServiceImpl implements MovieInfoService {
@@ -62,7 +65,7 @@ public class MovieInfoServiceImpl implements MovieInfoService {
                 .defaultIfEmpty(new MovieInfo())
                 .flatMap(movieInfo -> {
                     if (movieInfo.getId() == null) {
-                        return Mono.error(new RuntimeException("Movie not found"));
+                        return Mono.empty();
                     }
 
                     return movieInfoRepository.delete(movieInfo)

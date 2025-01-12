@@ -65,12 +65,17 @@ public class MovieInfoController {
             @RequestBody @Valid MovieInfo movieInfo
     ) {
         return movieInfoService.updateMovieInfoById(movieId, movieInfo)
-                .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
+                .switchIfEmpty(Mono.error(
+                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
+                );
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/movieInfos/id/{movieId}")
     public Mono<String> deleteMovieInfoById(@PathVariable @NotNull String movieId) {
-        return movieInfoService.deleteMovieInfoById(movieId);
+        return movieInfoService.deleteMovieInfoById(movieId)
+                .switchIfEmpty(Mono.error(
+                        new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
+                );
     }
 }
