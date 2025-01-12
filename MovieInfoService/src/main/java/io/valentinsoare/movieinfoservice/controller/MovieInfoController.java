@@ -20,27 +20,36 @@ public class MovieInfoController {
         this.movieInfoService = movieInfoService;
     }
 
-    @PostMapping("/movieInfos")
     @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/movieInfos")
     public Mono<MovieInfo> addMovieInfo(@RequestBody @Valid MovieInfo movieInfo) {
         return movieInfoService.addMovieInfo(movieInfo);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/{movieId}")
-    @ResponseStatus(HttpStatus.OK)
     public Mono<MovieInfo> getMovieInfo(@PathVariable @NotNull String movieId) {
-        return movieInfoService.getMovieInfoById(movieId);
+        return movieInfoService.getMovieInfoById(movieId)
+                .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/all")
-    @ResponseStatus(HttpStatus.OK)
     public Flux<MovieInfo> getAllMovieInfos() {
-        return movieInfoService.getAllMovieInfos();
+        return movieInfoService.getAllMovieInfos()
+                .switchIfEmpty(Flux.error(new RuntimeException("No movies found")));
     }
 
-    @GetMapping("/movieInfos/count")
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/movieInfos/count")
     public Mono<Long> countAll() {
         return movieInfoService.countAll();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/movieInfos/name/{name}")
+    public Mono<MovieInfo> getMovieByName(@PathVariable @NotNull String name) {
+        return movieInfoService.getMovieByName(name)
+                .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
     }
 }

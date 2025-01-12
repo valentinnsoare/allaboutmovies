@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 public interface MovieInfoService {
     Mono<MovieInfo> addMovieInfo(MovieInfo movieInfo);
     Mono<MovieInfo> getMovieInfoById(String movieId);
+    Mono<MovieInfo> getMovieByName(String name);
     Flux<MovieInfo> getAllMovieInfos();
     Mono<Long> countAll();
 }

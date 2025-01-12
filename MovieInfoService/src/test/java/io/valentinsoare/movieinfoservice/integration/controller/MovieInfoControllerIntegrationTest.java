@@ -119,4 +119,21 @@ public class MovieInfoControllerIntegrationTest {
                 });
 
     }
+
+    @Test
+    void testGetMovieByName() {
+        webTestClient.get()
+                .uri("/api/v1/movieInfos/name/Inception")
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(MovieInfo.class)
+                .value(movieInfo -> {
+                    assert movieInfo != null;
+                    assert movieInfo.getName().equals("Inception");
+                    assert movieInfo.getYear() == 2010;
+                    assert movieInfo.getCast().containsAll(Arrays.asList("Leonardo DiCaprio", "Joseph Gordon-Levitt"));
+                    assert movieInfo.getId().equals("2");
+                    assert movieInfo.getReleaseDate().equals(LocalDate.parse("2010-07-16"));
+                });
+    }
 }

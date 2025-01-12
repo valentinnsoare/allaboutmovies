@@ -31,6 +31,12 @@ public class MovieInfoServiceImpl implements MovieInfoService {
 
     @Override
     @Transactional(readOnly = true)
+    public Mono<MovieInfo> getMovieByName(String name) {
+        return movieInfoRepository.getMovieByName(name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Flux<MovieInfo> getAllMovieInfos() {
         return movieInfoRepository.findAll();
     }
