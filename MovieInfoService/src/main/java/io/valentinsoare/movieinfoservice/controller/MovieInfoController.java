@@ -52,4 +52,14 @@ public class MovieInfoController {
         return movieInfoService.getMovieByName(name)
                 .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/movieInfos/id/{movieId}")
+    public Mono<MovieInfo> updateMovieInfoById(
+            @PathVariable @NotNull String movieId,
+            @RequestBody @Valid MovieInfo movieInfo
+    ) {
+        return movieInfoService.updateMovieInfoById(movieId, movieInfo)
+                .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
+    }
 }

@@ -42,8 +42,24 @@ public class MovieInfoServiceImpl implements MovieInfoService {
     }
 
     @Override
+    @Transactional
+    public Mono<MovieInfo> updateMovieInfoById(String movieId, MovieInfo movieInfo) {
+        return movieInfoRepository.findById(movieId)
+                .flatMap(existingMovieInfo -> {
+                    existingMovieInfo.setName(movieInfo.getName());
+                    existingMovieInfo.setCast(movieInfo.getCast());
+                    existingMovieInfo.setYear(movieInfo.getYear());
+                    existingMovieInfo.setReleaseDate(movieInfo.getReleaseDate());
+
+                    return movieInfoRepository.save(existingMovieInfo);
+                });
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Mono<Long> countAll() {
         return movieInfoRepository.count();
     }
+
+
 }
