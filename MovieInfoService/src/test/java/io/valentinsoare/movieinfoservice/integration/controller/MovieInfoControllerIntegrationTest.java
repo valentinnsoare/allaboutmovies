@@ -73,7 +73,7 @@ public class MovieInfoControllerIntegrationTest {
                         .name("The Prestige")
                         .year(2006)
                         .cast(Arrays.asList("Christian Bale", "Hugh Jackman"))
-                        .id("4")
+                        .id("99")
                         .releaseDate(LocalDate.parse("2006-10-20"))
                         .build())
                 .exchange()
@@ -132,5 +132,28 @@ public class MovieInfoControllerIntegrationTest {
                 .expectStatus().is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("Inception");
+    }
+
+    @Test
+    void testUpdateMovieInfoById() {
+        String movieInfoId = "2";
+
+        webTestClient.put()
+                .uri(String.format("/api/v1/movieInfos/id/%s", movieInfoId))
+                .bodyValue(MovieInfo.builder()
+                        .id("2")
+                        .name("Inception")
+                        .year(2010)
+                        .cast(Arrays.asList("Leonardo DiCaprio", "Joseph Gordon-Levitt", "Tom Hardy"))
+                        .releaseDate(LocalDate.parse("2010-07-16"))
+                        .build())
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(MovieInfo.class)
+                .value(movieInfo -> {
+                    assert movieInfo != null;
+                    assert movieInfo.getName().equals("Inception");
+                    assert movieInfo.getCast().containsAll(Arrays.asList("Leonardo DiCaprio", "Joseph Gordon-Levitt", "Tom Hardy"));
+                });
     }
 }

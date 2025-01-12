@@ -25,12 +25,10 @@ public class MovieInfo {
     private String name;
 
     @Min(value = 1900, message = "Year should be at least 1900")
-    @Size(max = 4, message = "Year should have at most 4 characters")
     private Integer year;
 
     @Size(max = 100, message = "Cast should have at most 100 characters")
     private List<String> cast;
 
-    @Size(max = 10, message = "Release date should have at most 10 characters")
     private LocalDate releaseDate;
 }

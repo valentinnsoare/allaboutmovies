@@ -53,7 +53,7 @@ public class MovieInfoController {
                 .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @PutMapping("/movieInfos/id/{movieId}")
     public Mono<MovieInfo> updateMovieInfoById(
             @PathVariable @NotNull String movieId,
