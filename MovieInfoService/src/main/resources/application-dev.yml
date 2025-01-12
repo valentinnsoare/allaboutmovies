@@ -18,7 +18,7 @@ logging:
     console: ${CONSOLE_LOGGING_PATTERN:%green(%d{yyyy-MM-dd HH:mm:ss}) %blue(%-5level) %red([%thread]) %yellow(%logger{36}) - %msg%n}
   level:
     root: info
-    org.springframework.reactor: info
-    org.springframework.webflux: info
-    org.springframework.data.mongodb.core.MongoTemplate: info
+    org.springframework.web: debug
+    org.springframework.reactive: debug
+    org.springframework.data.mongodb.core.ReactiveMongoTemplate: debug
 
