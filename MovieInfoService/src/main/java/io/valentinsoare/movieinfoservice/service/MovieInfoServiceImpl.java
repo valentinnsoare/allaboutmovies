@@ -1,6 +1,7 @@
 package io.valentinsoare.movieinfoservice.service;
 
 import io.valentinsoare.movieinfoservice.document.MovieInfo;
+import io.valentinsoare.movieinfoservice.exception.NoElementsException;
 import io.valentinsoare.movieinfoservice.exception.ResourceNotFoundException;
 import io.valentinsoare.movieinfoservice.repository.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,8 @@ public class MovieInfoServiceImpl implements MovieInfoService {
     @Override
     @Transactional(readOnly = true)
     public Flux<MovieInfo> getAllMovieInfos() {
-        return movieInfoRepository.findAll();
+        return movieInfoRepository.findAll()
+                .switchIfEmpty(Flux.empty());
     }
 
     @Override
@@ -60,17 +62,9 @@ public class MovieInfoServiceImpl implements MovieInfoService {
 
     @Override
     @Transactional
-    public Mono<String> deleteMovieInfoById(String movieId) {
+    public Mono<MovieInfo> deleteMovieInfoById(String movieId) {
        return movieInfoRepository.findById(movieId)
-                .defaultIfEmpty(new MovieInfo())
-                .flatMap(movieInfo -> {
-                    if (movieInfo.getId() == null) {
-                        return Mono.empty();
-                    }
-
-                    return movieInfoRepository.delete(movieInfo)
-                            .then(Mono.just("Movie deleted"));
-                });
+                .switchIfEmpty(Mono.empty());
     }
 
     @Override

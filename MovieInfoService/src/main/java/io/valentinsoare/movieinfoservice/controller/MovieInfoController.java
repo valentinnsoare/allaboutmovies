@@ -1,6 +1,7 @@
 package io.valentinsoare.movieinfoservice.controller;
 
 import io.valentinsoare.movieinfoservice.document.MovieInfo;
+import io.valentinsoare.movieinfoservice.exception.NoElementsException;
 import io.valentinsoare.movieinfoservice.exception.ResourceNotFoundException;
 import io.valentinsoare.movieinfoservice.service.MovieInfoService;
 import jakarta.validation.Valid;
@@ -34,7 +35,9 @@ public class MovieInfoController {
     public Mono<MovieInfo> getMovieInfoById(@PathVariable @NotNull String movieId) {
         return movieInfoService.getMovieInfoById(movieId)
                 .switchIfEmpty(
-                        Mono.error(new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
+                        Mono.error(
+                                new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId))
+                        )
                 );
     }
 
@@ -42,7 +45,9 @@ public class MovieInfoController {
     @GetMapping("/movieInfos/all")
     public Flux<MovieInfo> getAllMovieInfos() {
         return movieInfoService.getAllMovieInfos()
-                .switchIfEmpty(Flux.error(new RuntimeException("No movies found")));
+                .switchIfEmpty(
+                        Flux.error(new NoElementsException("movieInfo"))
+                );
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -55,7 +60,9 @@ public class MovieInfoController {
     @GetMapping("/movieInfos/name/{name}")
     public Mono<MovieInfo> getMovieByName(@PathVariable @NotNull String name) {
         return movieInfoService.getMovieByName(name)
-                .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
+                .switchIfEmpty(Mono.error(
+                        new ResourceNotFoundException("movieInfo", Map.of("name", name)))
+                );
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -76,6 +83,7 @@ public class MovieInfoController {
         return movieInfoService.deleteMovieInfoById(movieId)
                 .switchIfEmpty(Mono.error(
                         new ResourceNotFoundException("movieInfo", Map.of("movieId", movieId)))
-                );
+                )
+                .then(Mono.just("MovieInfo with id: " + movieId + " deleted successfully."));
     }
 }

@@ -17,9 +17,10 @@ import java.util.TreeMap;
 public class MovieInfoCustomExceptionHandler {
 
     @ExceptionHandler({
-            ResourceNotFoundException.class
+            ResourceNotFoundException.class,
+            NoElementsException.class
     })
-    public ResponseEntity<ErrorMessage> handleGlobalException(ResourceNotFoundException e) {
+    public ResponseEntity<ErrorMessage> handleGlobalException(RuntimeException e) {
         ErrorMessage anErrorOccurred = ErrorMessage.builder()
                 .message(e.getLocalizedMessage())
                 .details("Given resource from the user was not found when request was processed.")
