@@ -29,8 +29,10 @@ public class MovieInfoController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/movieInfos/id/{movieId}")
     public Mono<MovieInfo> getMovieInfoById(@PathVariable @NotNull String movieId) {
+        String message = String.format("Movie info not found! with id: %s", movieId);
+
         return movieInfoService.getMovieInfoById(movieId)
-                .switchIfEmpty(Mono.error(new RuntimeException("Movie not found")));
+                .switchIfEmpty(Mono.error(new RuntimeException(message)));
     }
 
     @ResponseStatus(HttpStatus.OK)

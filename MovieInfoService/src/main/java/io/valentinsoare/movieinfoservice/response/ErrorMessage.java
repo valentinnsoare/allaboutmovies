@@ -14,7 +14,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorResponse {
+public class ErrorMessage {
     @NotNull
     private Instant timestamp;
 
