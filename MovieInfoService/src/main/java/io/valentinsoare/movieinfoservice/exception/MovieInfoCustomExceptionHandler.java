@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.reactive.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.TreeMap;
@@ -18,7 +19,8 @@ public class MovieInfoCustomExceptionHandler {
 
     @ExceptionHandler({
             ResourceNotFoundException.class,
-            NoElementsException.class
+            NoElementsException.class,
+            NoResourceFoundException.class
     })
     public ResponseEntity<ErrorMessage> handleGlobalException(RuntimeException e) {
         ErrorMessage anErrorOccurred = ErrorMessage.builder()

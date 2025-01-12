@@ -64,10 +64,16 @@ public class MovieInfoServiceImpl implements MovieInfoService {
     @Transactional
     public Mono<MovieInfo> deleteMovieInfoById(String movieId) {
        return movieInfoRepository.findById(movieId)
-                .switchIfEmpty(Mono.empty())
-                .flatMap(existingMovieInfo -> movieInfoRepository.delete(existingMovieInfo)
-                        .thenReturn(existingMovieInfo)
-                );
+               .flatMap(existingMovieInfo -> movieInfoRepository.delete(existingMovieInfo)
+                       .thenReturn(existingMovieInfo))
+               .switchIfEmpty(Mono.empty());
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Flux<MovieInfo> getAllMoviesInfosByYear(Integer year) {
+        return movieInfoRepository.findByYear(year);
     }
 
     @Override

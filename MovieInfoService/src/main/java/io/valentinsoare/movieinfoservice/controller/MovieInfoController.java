@@ -42,6 +42,15 @@ public class MovieInfoController {
                 );
     }
 
+    @GetMapping("/movieInfos/all/{year}")
+    public Flux<MovieInfo> getAllMoviesInfosByYear(@PathVariable @NotNull Integer year) {
+        return movieInfoService.getAllMoviesInfosByYear(year)
+                .switchIfEmpty(
+                        Flux.error(new ResourceNotFoundException("movieInfo", Map.of("year", String.valueOf(year))))
+                );
+    }
+
+
     @GetMapping("/movieInfos/all")
     public Flux<MovieInfo> getAllMovieInfos() {
         return movieInfoService.getAllMovieInfos()

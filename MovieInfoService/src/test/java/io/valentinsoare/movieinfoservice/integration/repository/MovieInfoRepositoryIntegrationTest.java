@@ -132,4 +132,18 @@ class MovieInfoRepositoryIntegrationTest {
                 .expectNextCount(2)
                 .verifyComplete();
     }
+
+    @Test
+    void findByYear() {
+        Integer givenYear = 2010;
+        Flux<MovieInfo> moviesByYear = movieInfoRepository.findByYear(givenYear);
+
+        StepVerifier.create(moviesByYear)
+                .consumeNextWith(movieInfo -> {
+                    assert movieInfo.getName().equals("Inception");
+                    assert movieInfo.getYear().equals(givenYear);
+                })
+                .expectComplete()
+                .verify();
+    }
 }
