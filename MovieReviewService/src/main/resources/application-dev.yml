@@ -3,10 +3,10 @@ spring:
     name: ${APPLICATION_NAME:MovieReviewService}
   data:
     mongodb:
-      uri: mongodb://admin:admin@localhost:27017/movie-review-db?authSource=admin
+      uri: mongodb://admin:admin@localhost:27017/all-about-movies?authSource=admin
       host: localhost
       port: 27017
-      database: movie-review-db
+      database: all-about-movies
       username: admin
       password: admin
 

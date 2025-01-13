@@ -5,7 +5,7 @@ services:
     container_name: mongodb
     restart: always
     environment:
-      MONGO_INITDB_DATABASE: movie-info-db
+      MONGO_INITDB_DATABASE: all-about-movies
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
     ports:
