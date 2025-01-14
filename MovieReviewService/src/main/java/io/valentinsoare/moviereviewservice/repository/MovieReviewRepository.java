@@ -18,6 +18,6 @@ public interface MovieReviewRepository extends ReactiveMongoRepository<MovieRevi
     @Query("{ 'rating' : { $gte : ?0 }, 'movieInfoId' : ?1 }")
     Flux<MovieReview> getAllReviewsByRatingAndMovieInfoId(Double rating, String movieInfoId);
 
-    @Query("{ 'movieInfoId' : ?0 }")
+    @Query("{ 'movieInfoId' : ?0 }.count()")
     Mono<Long> countAllReviewsByMovieInfoId(String movieInfoId);
 }
