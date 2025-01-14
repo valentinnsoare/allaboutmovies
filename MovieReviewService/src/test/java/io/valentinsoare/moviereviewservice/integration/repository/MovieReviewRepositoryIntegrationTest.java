@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -33,13 +34,13 @@ public class MovieReviewRepositoryIntegrationTest {
                         .build(),
                 MovieReview.builder()
                         .reviewId("2")
-                        .movieInfoId("2")
+                        .movieInfoId("5")
                         .comment("Awesome movie!")
-                        .rating(4.5)
+                        .rating(2.3)
                         .build(),
                 MovieReview.builder()
                         .reviewId("3")
-                        .movieInfoId("3")
+                        .movieInfoId("2")
                         .comment("Not good, terrible movie!")
                         .rating(4.5)
                         .build(),
@@ -73,6 +74,16 @@ public class MovieReviewRepositoryIntegrationTest {
     }
 
     @Test
+    void getAllReviewsByRatingAndMovieInfoId() {
+        Flux<MovieReview> reviewsWithRatingAndMovieInfoId =
+                movieReviewRepository.getAllReviewsByRatingAndMovieInfoId(4.5, "2");
+
+        StepVerifier.create(reviewsWithRatingAndMovieInfoId)
+                .expectNextCount(2)
+                .verifyComplete();
+    }
+
+    @Test
     void getAllReviewsByRating() {
         Flux<MovieReview> reviewsWithRating = movieReviewRepository.getAllReviewsByRating(4.5);
 
@@ -82,12 +93,27 @@ public class MovieReviewRepositoryIntegrationTest {
     }
 
     @Test
-    void getAllReviewsByRatingAndMovieInfoId() {
-        Flux<MovieReview> reviewsWithRatingAndMovieInfoId =
-                movieReviewRepository.getAllReviewsByRatingAndMovieInfoId(4.5, "2");
+    void findAll() {
+        Flux<MovieReview> all = movieReviewRepository.findAll();
 
-        StepVerifier.create(reviewsWithRatingAndMovieInfoId)
-                .expectNextCount(2)
+        StepVerifier.create(all)
+                .expectNextCount(4)
                 .verifyComplete();
     }
+
+    @Test
+    void findById() {
+        Mono<MovieReview> byId = movieReviewRepository.findById("1");
+
+        StepVerifier.create(byId)
+                .assertNext(movieReview -> {
+                    assert movieReview.getMovieInfoId().equals("1");
+                    assert movieReview.getRating() == 4.2;
+                    assert movieReview.getComment().equals("Great movie!");
+                })
+                .verifyComplete();
+    }
+
+
+
 }
