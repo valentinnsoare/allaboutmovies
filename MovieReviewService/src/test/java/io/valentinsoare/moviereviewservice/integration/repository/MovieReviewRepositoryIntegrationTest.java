@@ -4,8 +4,11 @@ import io.valentinsoare.moviereviewservice.document.MovieReview;
 import io.valentinsoare.moviereviewservice.repository.MovieReviewRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,5 +51,18 @@ public class MovieReviewRepositoryIntegrationTest {
     @AfterEach
     void tearDown() {
         movieReviewRepository.deleteAll().block();
+    }
+
+    @Test
+    void getReviewsByMovieInfoId() {
+        Flux<MovieReview> reviewsForAnId = movieReviewRepository.getReviewsByMovieInfoId("1");
+
+        StepVerifier.create(reviewsForAnId)
+                .consumeNextWith(movieReview -> {
+                    assert movieReview.getMovieInfoId().equals("1");
+                    assert movieReview.getRating() == 4.2;
+                    assert movieReview.getComment().equals("Great movie!");
+                })
+                .verifyComplete();
     }
 }

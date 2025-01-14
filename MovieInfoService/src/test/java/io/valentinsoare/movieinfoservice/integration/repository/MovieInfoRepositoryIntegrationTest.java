@@ -61,7 +61,7 @@ class MovieInfoRepositoryIntegrationTest {
 
     @Test
     void findAll() {
-        Flux<MovieInfo> all = movieInfoRepository.findAll().log();
+        Flux<MovieInfo> all = movieInfoRepository.findAll();
 
         StepVerifier.create(all)
                 .expectNextCount(3)
