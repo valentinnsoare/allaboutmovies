@@ -30,8 +30,9 @@ public class MovieReviewServiceImpl implements MovieReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Flux<MovieReview> getAllReviewsFromAMovieInfoId(String movieInfoId) {
-        return null;
+        return movieReviewRepository.getReviewsByMovieInfoId(movieInfoId);
     }
 
     @Override
@@ -58,12 +59,20 @@ public class MovieReviewServiceImpl implements MovieReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Flux<MovieReview> getAllMoviesReviewsByRating(Double rating) {
-        return null;
+        return movieReviewRepository.getAllReviewsByRating(rating);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Flux<MovieReview> getAllMoviesReviewsByRatingAndMovieInfoId(Double rating, String movieInfoId) {
+        return movieReviewRepository.getAllReviewsByRatingAndMovieInfoId(rating, movieInfoId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Mono<Long> countAllMovieReviewsByMovieInfoId(String movieInfoId) {
-        return null;
+        return movieReviewRepository.countAllReviewsByMovieInfoId(movieInfoId);
     }
 }

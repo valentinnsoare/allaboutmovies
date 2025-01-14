@@ -11,5 +11,6 @@ public interface MovieReviewService {
     Mono<MovieReview> updateMovieReviewById(String reviewId, MovieReview movieReview);
     Mono<MovieReview> deleteMovieReviewById(String reviewId);
     Flux<MovieReview> getAllMoviesReviewsByRating(Double rating);
+    Flux<MovieReview> getAllMoviesReviewsByRatingAndMovieInfoId(Double rating, String movieInfoId);
     Mono<Long> countAllMovieReviewsByMovieInfoId(String movieInfoId);
 }
