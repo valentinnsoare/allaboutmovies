@@ -152,4 +152,33 @@ public class MovieReviewRepositoryIntegrationTest {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void updateMovieReview() {
+        MovieReview movieReview = MovieReview.builder()
+                .reviewId("1")
+                .movieInfoId("1")
+                .comment("It was like a dream!")
+                .rating(4.99)
+                .build();
+
+        Mono<MovieReview> updatedReview = movieReviewRepository.findById("1")
+                .flatMap(existingMovieReview -> {
+                    existingMovieReview.setReviewId(movieReview.getReviewId());
+                    existingMovieReview.setMovieInfoId(movieReview.getMovieInfoId());
+                    existingMovieReview.setComment(movieReview.getComment());
+                    existingMovieReview.setRating(movieReview.getRating());
+
+                    return movieReviewRepository.save(existingMovieReview);
+                });
+
+        StepVerifier.create(updatedReview)
+                .assertNext(updated -> {
+                    assert updated.getMovieInfoId().equals("1");
+                    assert updated.getRating() == 4.99;
+                    assert updated.getComment().equals("It was like a dream!");
+                })
+                .expectComplete()
+                .verify();
+    }
 }
