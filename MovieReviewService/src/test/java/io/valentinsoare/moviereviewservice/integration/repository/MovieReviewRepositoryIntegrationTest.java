@@ -41,7 +41,7 @@ public class MovieReviewRepositoryIntegrationTest {
                         .reviewId("3")
                         .movieInfoId("3")
                         .comment("Not good, terrible movie!")
-                        .rating(3.8)
+                        .rating(4.5)
                         .build()
         );
 
@@ -63,6 +63,15 @@ public class MovieReviewRepositoryIntegrationTest {
                     assert movieReview.getRating() == 4.2;
                     assert movieReview.getComment().equals("Great movie!");
                 })
+                .verifyComplete();
+    }
+
+    @Test
+    void getAllReviewsByRating() {
+        Flux<MovieReview> reviewsWithRating = movieReviewRepository.getAllReviewsByRating(4.5);
+
+        StepVerifier.create(reviewsWithRating)
+                .expectNextCount(2)
                 .verifyComplete();
     }
 }
