@@ -49,4 +49,15 @@ public class MovieReviewController {
                 )
                 .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
+
+    @DeleteMapping("/id/{reviewId}")
+    public Mono<ResponseEntity<String>> deleteMovieReviewById(@PathVariable @NotNull String reviewId) {
+        return movieReviewService.deleteMovieReviewById(reviewId)
+                .switchIfEmpty(
+                        Mono.error(new MovieReviewNotFoundException("movieReview", Map.of("reviewId", reviewId)))
+                )
+                .map(m -> new ResponseEntity<>(
+                        String.format("Movie review with id %s deleted successfully!", reviewId), HttpStatus.OK)
+                );
+    }
 }

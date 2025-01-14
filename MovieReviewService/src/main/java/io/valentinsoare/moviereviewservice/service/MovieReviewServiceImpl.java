@@ -49,8 +49,12 @@ public class MovieReviewServiceImpl implements MovieReviewService {
     }
 
     @Override
+    @Transactional
     public Mono<MovieReview> deleteMovieReviewById(String reviewId) {
-        return null;
+        return movieReviewRepository.findById(reviewId)
+                .flatMap(existingMovieReview -> movieReviewRepository.delete(existingMovieReview)
+                        .thenReturn(existingMovieReview))
+                .switchIfEmpty(Mono.empty());
     }
 
     @Override
