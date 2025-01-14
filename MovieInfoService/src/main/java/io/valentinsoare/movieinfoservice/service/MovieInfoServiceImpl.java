@@ -3,15 +3,11 @@ package io.valentinsoare.movieinfoservice.service;
 import io.valentinsoare.movieinfoservice.document.MovieInfo;
 import io.valentinsoare.movieinfoservice.repository.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
 
 @Service
 public class MovieInfoServiceImpl implements MovieInfoService {
