@@ -1,4 +1,4 @@
 package io.valentinsoare.moviereviewservice.integration.controller;
 
-public class MoviewReviewControllerIntegrationTest {
+public class MovieReviewControllerIntegrationTest {
 }
