@@ -42,6 +42,12 @@ public class MovieReviewRepositoryIntegrationTest {
                         .movieInfoId("3")
                         .comment("Not good, terrible movie!")
                         .rating(4.5)
+                        .build(),
+                MovieReview.builder()
+                        .reviewId("4")
+                        .movieInfoId("2")
+                        .comment("Next level dude!!")
+                        .rating(4.5)
                         .build()
         );
 
@@ -71,6 +77,16 @@ public class MovieReviewRepositoryIntegrationTest {
         Flux<MovieReview> reviewsWithRating = movieReviewRepository.getAllReviewsByRating(4.5);
 
         StepVerifier.create(reviewsWithRating)
+                .expectNextCount(2)
+                .verifyComplete();
+    }
+
+    @Test
+    void getAllReviewsByRatingAndMovieInfoId() {
+        Flux<MovieReview> reviewsWithRatingAndMovieInfoId =
+                movieReviewRepository.getAllReviewsByRatingAndMovieInfoId(4.5, "2");
+
+        StepVerifier.create(reviewsWithRatingAndMovieInfoId)
                 .expectNextCount(2)
                 .verifyComplete();
     }
