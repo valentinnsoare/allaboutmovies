@@ -114,6 +114,42 @@ public class MovieReviewRepositoryIntegrationTest {
                 .verifyComplete();
     }
 
+    @Test
+    void save() {
+        MovieReview movieReview = MovieReview.builder()
+                .reviewId("5")
+                .movieInfoId("3")
+                .comment("Great movie!")
+                .rating(4.2)
+                .build();
 
+        Mono<MovieReview> savedMovieReview = movieReviewRepository.save(movieReview);
 
+        StepVerifier.create(savedMovieReview)
+                .assertNext(savedReview -> {
+                    assert savedReview.getMovieInfoId().equals("3");
+                    assert savedReview.getRating() == 4.2;
+                    assert savedReview.getComment().equals("Great movie!");
+                })
+                .expectComplete()
+                .verify();
+
+        movieReviewRepository.delete(movieReview).block();
+    }
+
+    @Test
+    void delete() {
+        Mono<MovieReview> deletedReview = movieReviewRepository.findById("1")
+                .flatMap(movieReview -> movieReviewRepository.delete(movieReview)
+                        .thenReturn(movieReview));
+
+        StepVerifier.create(deletedReview)
+                .assertNext(deleted -> {
+                    assert deleted.getMovieInfoId().equals("1");
+                    assert deleted.getRating() == 4.2;
+                    assert deleted.getComment().equals("Great movie!");
+                })
+                .expectComplete()
+                .verify();
+    }
 }
