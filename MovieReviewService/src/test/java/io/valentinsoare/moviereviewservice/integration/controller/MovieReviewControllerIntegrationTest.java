@@ -124,4 +124,32 @@ public class MovieReviewControllerIntegrationTest {
                     assert m.getMovieInfoId().equals(mr.getMovieInfoId());
                 });
     }
+
+    @Test
+    void deleteMovieReviewById() {
+        String movieReviewId = "3";
+
+        webTestClient.delete()
+                .uri(String.format("/api/v1/movieReviews/id/%s", movieReviewId))
+                .exchange()
+                .expectStatus()
+                .isOk();
+    }
+
+    @Test
+    void getAllMovieReviewsByRating() {
+        double rating = 4.5;
+
+        webTestClient.get()
+            .uri(String.format("/api/v1/movieReviews//rating/%s", rating))
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBodyList(MovieReview.class)
+            .value(movieReviews -> {
+                assert movieReviews != null;
+                assert movieReviews.size() == 2;
+                assert movieReviews.stream().allMatch(review -> review.getRating() == rating);
+            });
+    }
 }
