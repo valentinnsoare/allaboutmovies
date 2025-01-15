@@ -83,4 +83,20 @@ public class MovieReviewControllerIntegrationTest {
                 .expectBody(MovieReview.class)
                 .isEqualTo(movieReview);
     }
+
+    @Test
+    void getMovieReviewById() {
+        String id = "1";
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movieReviews/id/%s", id))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(MovieReview.class)
+                .value(movieReview -> {
+                    assert movieReview != null;
+                    assert movieReview.getReviewId().equals(id);
+                });
+    }
 }
