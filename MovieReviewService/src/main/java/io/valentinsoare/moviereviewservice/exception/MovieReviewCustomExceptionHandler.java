@@ -32,9 +32,7 @@ public class MovieReviewCustomExceptionHandler {
         return new ResponseEntity<>(anErrorOccurred, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({
-            WebExchangeBindException.class
-    })
+    @ExceptionHandler({ WebExchangeBindException.class })
     public ResponseEntity<Object> handleResourceViolationException(WebExchangeBindException e) {
         TreeMap<String, String> errors = new TreeMap<>();
 
