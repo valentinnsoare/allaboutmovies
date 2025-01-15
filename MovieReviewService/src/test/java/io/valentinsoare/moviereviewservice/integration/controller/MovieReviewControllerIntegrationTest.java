@@ -99,4 +99,29 @@ public class MovieReviewControllerIntegrationTest {
                     assert movieReview.getReviewId().equals(id);
                 });
     }
+
+    @Test
+    void updateMovieReviewById() {
+        String id = "1";
+
+        MovieReview mr = MovieReview.builder()
+                .reviewId(id)
+                .movieInfoId("99")
+                .comment("The Shit!")
+                .rating(4.99)
+                .build();
+
+        webTestClient.put()
+                .uri(String.format("/api/v1/movieReviews/id/%s", id))
+                .bodyValue(mr)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(MovieReview.class)
+                .value(m -> {
+                    assert m.getReviewId().equals(id);
+                    assert m.getRating().equals(mr.getRating());
+                    assert m.getMovieInfoId().equals(mr.getMovieInfoId());
+                });
+    }
 }
