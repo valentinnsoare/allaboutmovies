@@ -152,4 +152,39 @@ public class MovieReviewControllerIntegrationTest {
                 assert movieReviews.stream().allMatch(review -> review.getRating() == rating);
             });
     }
+
+    @Test
+    void getAllReviewsFromAMovieInfoId() {
+        String movieInfoId = "2";
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movieReviews/all/id/%s", movieInfoId))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(MovieReview.class)
+                .value(movieReviews -> {
+                    assert movieReviews != null;
+                    assert movieReviews.size() == 2;
+                    assert movieReviews.stream().allMatch(review -> review.getMovieInfoId().equals(movieInfoId));
+                });
+    }
+
+    @Test
+    void getAllMoviesReviewsByRatingAndMovieInfoId() {
+        double rating = 4.5;
+        String movieInfoId = "2";
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movieReviews/rating/%s/id/%s", rating, movieInfoId))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(MovieReview.class)
+                .value(movieReviews -> {
+                    assert movieReviews != null;
+                    assert movieReviews.size() == 2;
+                    assert movieReviews.stream().allMatch(review -> review.getRating() == rating && review.getMovieInfoId().equals(movieInfoId));
+                });
+    }
 }
