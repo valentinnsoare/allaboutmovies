@@ -72,7 +72,7 @@ public class MovieReviewController {
     }
 
     @GetMapping("/all/id/{movieInfoId}")
-    public Flux<MovieReview> getAllReviewsFromAMovieInfoId(@PathVariable @NotNull String movieInfoId) {
+    public Flux<MovieReview> getAllMovieReviewsFromAMovieInfoId(@PathVariable @NotNull String movieInfoId) {
         return movieReviewService.getAllReviewsFromAMovieInfoId(movieInfoId)
                 .switchIfEmpty(
                         Flux.error(

@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: ${MOVIE_APPLICATION_NAME:MovieService}
+
+server:
+  port: ${MOVIE_APPLICATION_PORT:8080}
+
+logging:
+  pattern:
+    console: ${MOVIE_CONSOLE_LOGGING_PATTERN:%green(%d{yyyy-MM-dd HH:mm:ss}) %blue(%-5level) %red([%thread]) %yellow(%logger{36}) - %msg%n}
+  level:
+    root: info
+    org.springframework.web: debug
+    org.springframework.reactive: debug
+    org.springframework.data.mongodb.core.ReactiveMongoTemplate: debug
+
+restClient:
+    movieInfoServiceUrl: "http://localhost:8082/api/v1/movieInfos"
+    movieReviewServiceUrl: "http://localhost:8081/api/v1/movieReviews"
