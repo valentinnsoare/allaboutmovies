@@ -25,6 +25,8 @@ public class MovieInfoRestClient {
         return webClient.get()
                 .uri(url, movieId)
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        clientResponse -> Mono.error())
                 .bodyToMono(MovieInfo.class);
     }
 }

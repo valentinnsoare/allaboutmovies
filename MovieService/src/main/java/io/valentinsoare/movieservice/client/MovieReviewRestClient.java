@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 
 @Component
@@ -20,7 +21,11 @@ public class MovieReviewRestClient {
     }
 
     public Flux<MovieReview> getAllReviewsFromMovieInfoId(String movieInfoId) {
-        String url = urlMovieReviewService.concat("/all/id/{movieInfoId}");
+        String url = UriComponentsBuilder.fromUriString(urlMovieReviewService)
+                .path("/all/id/{movieInfoId}")
+                .queryParam("movieInfoId", movieInfoId)
+                .buildAndExpand()
+                .toUriString();
 
         return webClient.get()
                 .uri(url, movieInfoId)
