@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ${APPLICATION_NAME:MovieReviewService}
+    name: ${MOVIE_REVIEW_APPLICATION_NAME:MovieReviewService}
   data:
     mongodb:
       uri: mongodb://admin:admin@localhost:27017/all-about-movies?authSource=admin
@@ -11,11 +11,11 @@ spring:
       password: admin
 
 server:
-  port: ${APPLICATION_PORT:8181}
+  port: ${MOVIE_REVIEW_APPLICATION_PORT:8081}
 
 logging:
   pattern:
-    console: ${CONSOLE_LOGGING_PATTERN:%green(%d{yyyy-MM-dd HH:mm:ss}) %blue(%-5level) %red([%thread]) %yellow(%logger{36}) - %msg%n}
+    console: ${MOVIE_REVIEW_CONSOLE_LOGGING_PATTERN:%green(%d{yyyy-MM-dd HH:mm:ss}) %blue(%-5level) %red([%thread]) %yellow(%logger{36}) - %msg%n}
   level:
     root: info
     org.springframework.web: debug
