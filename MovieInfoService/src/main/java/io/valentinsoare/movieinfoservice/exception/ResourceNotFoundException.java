@@ -4,9 +4,12 @@ import java.util.Map;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class ResourceNotFoundException extends RuntimeException {
     private final String resourceName;
