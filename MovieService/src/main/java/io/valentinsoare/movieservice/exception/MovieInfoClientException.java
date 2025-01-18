@@ -9,5 +9,5 @@ import lombok.*;
 @AllArgsConstructor
 public class MovieInfoClientException extends RuntimeException {
     private String message;
-    private Integer statusCode;
+    private String statusCode;
 }
