@@ -1,6 +1,7 @@
 package io.valentinsoare.movieservice.client;
 
 import io.valentinsoare.movieservice.domain.MovieInfo;
+import io.valentinsoare.movieservice.exception.MovieInfoClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,9 @@ public class MovieInfoRestClient {
                 .uri(url, movieId)
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
-                        clientResponse -> Mono.error())
+                        clientResponse -> Mono.error(new MovieInfoClientException(
+                                "Error while calling movie info service with status code",
+                                String.valueOf(clientResponse.statusCode()))))
                 .bodyToMono(MovieInfo.class);
     }
 }
