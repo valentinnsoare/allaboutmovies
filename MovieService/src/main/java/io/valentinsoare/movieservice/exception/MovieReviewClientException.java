@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieReviewClientException {
+public class MovieReviewClientException extends RuntimeException {
     String message;
     Integer statusCode;
 }
