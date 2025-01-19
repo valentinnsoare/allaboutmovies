@@ -14,8 +14,8 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/v1/movies")
 public class MovieServiceController {
-    private MovieInfoRestClient movieInfoRestClient;
-    private MovieReviewRestClient movieReviewRestClient;
+    private final MovieInfoRestClient movieInfoRestClient;
+    private final MovieReviewRestClient movieReviewRestClient;
 
     @Autowired
     public MovieServiceController(MovieInfoRestClient movieInfoRestClient,
