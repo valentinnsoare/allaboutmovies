@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  mongodb_movie_service:
+    image: mongo
+    container_name: mongodb_movie_service
+    environment:
+      MONGO_INITDB_DATABASE: allaboutmovies
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - "27017:27017"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+        max-file: "12"
+    volumes:
+        - mongodb_all_about_movies_data:/data/db
+        - ./createUserDB/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+#  movie-review-service:
+#    image: movie-review-service
+#    container_name: movie-review-service
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8081:8081"
+#    volumes:
+#        - ./movie-review-service:/app
+#    depends_on:
+#      - mongodb_movie_service
+#    environment:
+#      SPRING_DATA_MONGODB_URI: mongodb://admin:admin@mongodb:27017/allaboutmovies
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "10M"
+#        max-file: "12"
+#    restart: unless-stopped
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
+#
+#  movie-service:
+#    image: movie-service
+#    container_name: movie-service
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#        - ./movie-service:/app
+#    depends_on:
+#      - mongodb_movie_service
+#      - movie-info-service
+#      - movie-review-service
+#    environment:
+#      SPRING_DATA_MONGODB_URI: mongodb://admin:admin@mongodb:27017/allaboutmovies
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "10M"
+#        max-file: "12"
+#    restart: unless-stopped
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
+
+volumes:
+    movie-service:
+    movie-review-service:
+    movie-info-service:
+    mongodb_all_about_movies_data:
+
+
+
+

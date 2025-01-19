@@ -28,7 +28,7 @@ public class MovieInfoRestClient {
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
                         clientResponse -> Mono.error(new MovieInfoClientException(
-                                "Error while calling movie info service with status code",
+                                String.format("There is no movieInfo available with id %s", movieId),
                                 String.valueOf(clientResponse.statusCode()))))
                 .bodyToMono(MovieInfo.class);
     }
