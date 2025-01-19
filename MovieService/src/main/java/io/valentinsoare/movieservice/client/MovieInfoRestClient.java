@@ -4,6 +4,8 @@ import io.valentinsoare.movieservice.domain.MovieInfo;
 import io.valentinsoare.movieservice.exception.MovieInfoClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -26,10 +28,15 @@ public class MovieInfoRestClient {
         return webClient.get()
                 .uri(url, movieId)
                 .retrieve()
-                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
-                        clientResponse -> Mono.error(new MovieInfoClientException(
-                                String.format("There is no movieInfo available with id %s", movieId),
-                                String.valueOf(clientResponse.statusCode()))))
-                .bodyToMono(MovieInfo.class);
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    if (clientResponse.statusCode().equals(HttpStatus.NOT_FOUND)) {
+                        return Mono.error(new MovieInfoClientException(String.format("MovieInfo not found with id: %s", movieId),
+                                String.valueOf(clientResponse.statusCode().value())));
+                    }
+
+                    return clientResponse.bodyToMono(String.class)
+                            .flatMap(errorBody -> Mono.error(new MovieInfoClientException(
+                                    errorBody, String.valueOf(clientResponse.statusCode().value()))));
+                }).bodyToMono(MovieInfo.class);
     }
 }
