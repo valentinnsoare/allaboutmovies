@@ -2,6 +2,7 @@ package io.valentinsoare.movieservice.client;
 
 import io.valentinsoare.movieservice.domain.MovieInfo;
 import io.valentinsoare.movieservice.exception.MovieInfoClientException;
+import io.valentinsoare.movieservice.exception.MovieInfoServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,12 @@ public class MovieInfoRestClient {
                     return clientResponse.bodyToMono(String.class)
                             .flatMap(errorBody -> Mono.error(new MovieInfoClientException(
                                     errorBody, String.valueOf(clientResponse.statusCode().value()))));
-                }).bodyToMono(MovieInfo.class);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieInfoServerException(
+                                String.format("Server exception in MovieInfoService: %s",
+                                        errorBody)))
+                        ))
+                .bodyToMono(MovieInfo.class);
     }
 }

@@ -18,9 +18,35 @@ import java.util.TreeMap;
 public class MovieServiceCustomExceptionHandler {
     @ExceptionHandler({
             MovieInfoClientException.class,
-            MovieInfoServerException.class,
             MovieReviewClientException.class,
-            MovieReviewServerException.class,
+    })
+    public ResponseEntity<ErrorMessage> handleClientException(RuntimeException e) {
+        ErrorMessage anErrorOccurred = ErrorMessage.builder()
+                .message(e.getLocalizedMessage())
+                .details("Client error occurred when request was processed.")
+                .timestamp(Instant.now())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return new ResponseEntity<>(anErrorOccurred, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+        MovieInfoServerException.class,
+        MovieReviewServerException.class
+    })
+    public ResponseEntity<ErrorMessage> handleServerException(RuntimeException e) {
+        ErrorMessage anErrorOccurred = ErrorMessage.builder()
+                .message(e.getLocalizedMessage())
+                .details("Server error occurred when request was processed.")
+                .timestamp(Instant.now())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .build();
+
+        return new ResponseEntity<>(anErrorOccurred, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({
             NoResourceFoundException.class
     })
     public ResponseEntity<ErrorMessage> handleGlobalException(RuntimeException e) {
@@ -34,7 +60,9 @@ public class MovieServiceCustomExceptionHandler {
         return new ResponseEntity<>(anErrorOccurred, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({ WebExchangeBindException.class })
+    @ExceptionHandler({
+            WebExchangeBindException.class,
+    })
     public ResponseEntity<Object> handleResourceViolationException(WebExchangeBindException e) {
         TreeMap<String, String> errors = new TreeMap<>();
 
