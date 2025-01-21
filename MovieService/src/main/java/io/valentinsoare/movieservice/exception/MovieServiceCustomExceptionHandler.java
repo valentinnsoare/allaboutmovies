@@ -49,7 +49,7 @@ public class MovieServiceCustomExceptionHandler {
     @ExceptionHandler({
             NoResourceFoundException.class
     })
-    public ResponseEntity<ErrorMessage> handleGlobalException(RuntimeException e) {
+    public ResponseEntity<ErrorMessage> handleNoResourceException(RuntimeException e) {
         ErrorMessage anErrorOccurred = ErrorMessage.builder()
                 .message(e.getLocalizedMessage())
                 .details("Resource from the user was not found when request was processed.")
@@ -74,5 +74,19 @@ public class MovieServiceCustomExceptionHandler {
         });
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+            RuntimeException.class
+    })
+    public ResponseEntity<ErrorMessage> handleGlobalException(RuntimeException e) {
+        ErrorMessage anErrorOccurred = ErrorMessage.builder()
+                .message(e.getLocalizedMessage())
+                .details("An error occurred while API is running.")
+                .timestamp(Instant.now())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .build();
+
+        return new ResponseEntity<>(anErrorOccurred, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
