@@ -74,6 +74,11 @@ public class MovieServiceControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isNotFound();
+
+        WireMock.verify(
+                1,
+                getRequestedFor(urlMatching(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
+        );
     }
 
     @Test
@@ -123,10 +128,8 @@ public class MovieServiceControllerIntegrationTest {
                 .is5xxServerError();
 
         WireMock.verify(
-                4,
+                6,
                 getRequestedFor(urlMatching(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
         );
     }
-
-
 }
