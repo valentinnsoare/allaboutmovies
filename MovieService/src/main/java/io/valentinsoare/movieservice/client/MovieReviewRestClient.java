@@ -27,8 +27,7 @@ public class MovieReviewRestClient {
 
     public Flux<MovieReview> getAllReviewsFromMovieInfoId(String movieInfoId) {
         String url = UriComponentsBuilder.fromUriString(urlMovieReviewService)
-                .path("/all/id/{movieInfoId}")
-                .queryParam("movieInfoId", movieInfoId)
+                .path(String.format("/all/id/%s", movieInfoId))
                 .buildAndExpand()
                 .toUriString();
 
