@@ -28,7 +28,7 @@ public class MovieServiceCustomExceptionHandler {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .build();
 
-        return new ResponseEntity<>(anErrorOccurred, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(anErrorOccurred, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({

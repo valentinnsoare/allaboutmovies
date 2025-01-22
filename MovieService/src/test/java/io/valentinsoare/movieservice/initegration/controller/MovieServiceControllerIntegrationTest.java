@@ -1,7 +1,6 @@
 package io.valentinsoare.movieservice.initegration.controller;
 
 import io.valentinsoare.movieservice.domain.Movie;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -58,5 +57,21 @@ public class MovieServiceControllerIntegrationTest {
                     assert movie.getMovieInfo().getId().equals(idOfTheMovie);
                     assert movie.getReviews().size() == 2;
                 });
+    }
+
+    @Test
+    void getMovieByIdNotFound() {
+        String idOfTheMovie = "2";
+
+        stubFor(get(urlEqualTo(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                ));
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movies/id/%s", idOfTheMovie))
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }
