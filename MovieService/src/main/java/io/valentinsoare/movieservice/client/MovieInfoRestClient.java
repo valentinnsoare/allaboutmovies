@@ -44,6 +44,7 @@ public class MovieInfoRestClient {
                                 String.format("Server exception in MovieInfoService: %s",
                                         errorBody)))
                         ))
-                .bodyToMono(MovieInfo.class);
+                .bodyToMono(MovieInfo.class)
+                .retry(3);
     }
 }

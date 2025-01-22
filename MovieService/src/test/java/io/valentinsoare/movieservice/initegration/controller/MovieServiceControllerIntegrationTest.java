@@ -1,5 +1,6 @@
 package io.valentinsoare.movieservice.initegration.controller;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import io.valentinsoare.movieservice.domain.Movie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,5 +121,12 @@ public class MovieServiceControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is5xxServerError();
+
+        WireMock.verify(
+                4,
+                getRequestedFor(urlMatching(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
+        );
     }
+
+
 }
