@@ -8,27 +8,15 @@ import reactor.util.retry.Retry;
 import java.time.Duration;
 
 public class RetryUtil {
-    public static Retry retrySpecMovieInfosServerException(int maxRetries, int retryDelay) {
+    public static Retry retrySpec(int maxRetries, int retryDelay) {
         return Retry.fixedDelay(maxRetries, Duration.ofSeconds(retryDelay))
-                .filter(ex -> ex instanceof MovieInfoServerException)
+                .filter(ex -> ex instanceof MovieInfoServerException | ex instanceof MovieReviewServerException)
                 .onRetryExhaustedThrow((retryBackOff, retrySignal) -> Exceptions.propagate(
                         retrySignal.failure()
                 ));
     }
 
-    public static Retry retrySpecMovieInfosServerException() {
-        return retrySpecMovieInfosServerException(3,1);
-    }
-
-    public static Retry retrySpecMovieReviewsServerException(int maxRetries, int retryDelay) {
-        return Retry.fixedDelay(maxRetries, Duration.ofSeconds(retryDelay))
-                .filter(ex -> ex instanceof MovieReviewServerException)
-                .onRetryExhaustedThrow((retryBackOff, retrySignal) -> Exceptions.propagate(
-                        retrySignal.failure()
-                ));
-    }
-
-    public static Retry retrySpecMovieReviewsServerException() {
-        return retrySpecMovieReviewsServerException(3,1);
+    public static Retry retrySpec() {
+        return retrySpec(3,1);
     }
 }

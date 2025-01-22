@@ -51,6 +51,6 @@ public class MovieReviewRestClient {
                         )))
                 )
                 .bodyToFlux(MovieReview.class)
-                .retryWhen(RetryUtil.retrySpecMovieReviewsServerException());
+                .retryWhen(RetryUtil.retrySpec());
     }
 }

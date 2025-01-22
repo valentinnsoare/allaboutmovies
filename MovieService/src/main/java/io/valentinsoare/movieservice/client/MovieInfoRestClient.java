@@ -10,12 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
-import reactor.util.retry.RetryBackoffSpec;
 
-import java.time.Duration;
 
 @Component
 public class MovieInfoRestClient {
@@ -52,6 +48,6 @@ public class MovieInfoRestClient {
                         ))
                 .bodyToMono(MovieInfo.class)
 //                .retry(3)
-                .retryWhen(RetryUtil.retrySpecMovieInfosServerException());
+                .retryWhen(RetryUtil.retrySpec());
     }
 }
