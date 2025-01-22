@@ -3,6 +3,7 @@ package io.valentinsoare.movieservice.client;
 import io.valentinsoare.movieservice.domain.MovieInfo;
 import io.valentinsoare.movieservice.exception.MovieInfoClientException;
 import io.valentinsoare.movieservice.exception.MovieInfoServerException;
+import io.valentinsoare.movieservice.util.RetryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -31,12 +32,6 @@ public class MovieInfoRestClient {
     public Mono<MovieInfo> getMovieInfo(String movieId) {
         String url = urlMovieInfoService.concat("/id/{movieId}");
 
-        RetryBackoffSpec retryBackoffSpec = Retry.fixedDelay(3, Duration.ofSeconds(1))
-                .filter(ex -> ex instanceof MovieInfoServerException)
-                .onRetryExhaustedThrow((retryBackOff, retrySignal) -> Exceptions.propagate(
-                    retrySignal.failure()
-                ));
-
         return webClient.get()
                 .uri(url, movieId)
                 .retrieve()
@@ -57,6 +52,6 @@ public class MovieInfoRestClient {
                         ))
                 .bodyToMono(MovieInfo.class)
 //                .retry(3)
-                .retryWhen(retryBackoffSpec);
+                .retryWhen(RetryUtil.retrySpec());
     }
 }
