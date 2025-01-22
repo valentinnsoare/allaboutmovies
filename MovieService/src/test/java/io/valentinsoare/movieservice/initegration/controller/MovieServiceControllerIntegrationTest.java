@@ -74,4 +74,35 @@ public class MovieServiceControllerIntegrationTest {
                 .expectStatus()
                 .isNotFound();
     }
+
+    @Test
+    void getMovieByIdReviewsNotFound() {
+        String idOfTheMovie = "1";
+
+        stubFor(get(urlEqualTo(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movieinfo.json")
+                ));
+
+        stubFor(get(urlEqualTo(String.format("/api/v1/movieReviews/all/id/%s", idOfTheMovie)))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                ));
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movies/id/%s", idOfTheMovie))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(Movie.class)
+                .consumeWith(movieEntityExchangeResult -> {
+
+                    Movie movie = movieEntityExchangeResult.getResponseBody();
+
+                    assert movie != null;
+                    assert movie.getMovieInfo().getId().equals(idOfTheMovie);
+                    assert movie.getReviews().isEmpty();
+                });
+    }
 }
