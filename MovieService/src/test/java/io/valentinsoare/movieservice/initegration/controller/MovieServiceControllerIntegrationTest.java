@@ -49,6 +49,14 @@ public class MovieServiceControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBody(Movie.class);
+                .expectBody(Movie.class)
+                .consumeWith(movieEntityExchangeResult -> {
+
+                    Movie movie = movieEntityExchangeResult.getResponseBody();
+
+                    assert movie != null;
+                    assert movie.getMovieInfo().getId().equals(idOfTheMovie);
+                    assert movie.getReviews().size() == 2;
+                });
     }
 }
