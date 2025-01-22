@@ -97,7 +97,6 @@ public class MovieServiceControllerIntegrationTest {
                 .isOk()
                 .expectBody(Movie.class)
                 .consumeWith(movieEntityExchangeResult -> {
-
                     Movie movie = movieEntityExchangeResult.getResponseBody();
 
                     assert movie != null;
