@@ -104,4 +104,21 @@ public class MovieServiceControllerIntegrationTest {
                     assert movie.getReviews().isEmpty();
                 });
     }
+
+    @Test
+    void getMovieByIdServerError() {
+        String idOfTheMovie = "1";
+
+        stubFor(get(urlEqualTo(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
+                .willReturn(aResponse()
+                        .withStatus(500)
+                        .withBody("MovieInfo Service is down")
+                ));
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movies/id/%s", idOfTheMovie))
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
+    }
 }
