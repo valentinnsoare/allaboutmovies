@@ -20,8 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
         "restClient.movieReviewServiceUrl=http://localhost:8084/api/v1/movieReviews"
 })
 public class MovieServiceControllerIntegrationTest {
-
-    private WebTestClient webTestClient;
+    private final WebTestClient webTestClient;
 
     @Autowired
     public MovieServiceControllerIntegrationTest(WebTestClient webTestClient) {
@@ -128,8 +127,36 @@ public class MovieServiceControllerIntegrationTest {
                 .is5xxServerError();
 
         WireMock.verify(
-                6,
+                7,
                 getRequestedFor(urlMatching(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
+        );
+    }
+
+    @Test
+    void getMovieByIdReviewsServerError() {
+        String idOfTheMovie = "1";
+
+        stubFor(get(urlEqualTo(String.format("/api/v1/movieInfos/id/%s", idOfTheMovie)))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("movieinfo.json")
+                ));
+
+        stubFor(get(urlEqualTo(String.format("/api/v1/movieReviews/all/id/%s", idOfTheMovie)))
+                .willReturn(aResponse()
+                        .withStatus(500)
+                        .withBody("MovieReview Service is down")
+                ));
+
+        webTestClient.get()
+                .uri(String.format("/api/v1/movies/id/%s", idOfTheMovie))
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
+
+        WireMock.verify(
+                5,
+                getRequestedFor(urlMatching(String.format("/api/v1/movieReviews/all/id/%s", idOfTheMovie)))
         );
     }
 }

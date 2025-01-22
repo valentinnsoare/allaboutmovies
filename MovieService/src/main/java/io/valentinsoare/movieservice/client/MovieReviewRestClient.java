@@ -3,6 +3,7 @@ package io.valentinsoare.movieservice.client;
 import io.valentinsoare.movieservice.domain.MovieReview;
 import io.valentinsoare.movieservice.exception.MovieReviewClientException;
 import io.valentinsoare.movieservice.exception.MovieReviewServerException;
+import io.valentinsoare.movieservice.util.RetryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,7 @@ public class MovieReviewRestClient {
                                         errorBody)
                         )))
                 )
-                .bodyToFlux(MovieReview.class);
+                .bodyToFlux(MovieReview.class)
+                .retryWhen(RetryUtil.retrySpecMovieReviewsServerException());
     }
 }

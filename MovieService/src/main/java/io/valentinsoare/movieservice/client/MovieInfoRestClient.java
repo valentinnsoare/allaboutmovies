@@ -52,6 +52,6 @@ public class MovieInfoRestClient {
                         ))
                 .bodyToMono(MovieInfo.class)
 //                .retry(3)
-                .retryWhen(RetryUtil.retrySpec());
+                .retryWhen(RetryUtil.retrySpecMovieInfosServerException());
     }
 }
