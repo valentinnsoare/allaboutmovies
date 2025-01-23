@@ -37,6 +37,12 @@ public class MovieReviewController {
         return movieReviewSink.asFlux();
     }
 
+    @GetMapping(value = "/stream/id/{movieInfoId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieReview> getStreamMovieReviewsByMovieInfoId(@PathVariable @NotNull String movieInfoId) {
+        return movieReviewSink.asFlux()
+                .filter(m -> m.getMovieInfoId().equals(movieInfoId));
+    }
+
     @GetMapping("/id/{reviewId}")
     public Mono<ResponseEntity<MovieReview>> getMovieReviewById(@PathVariable @NotNull String reviewId) {
         return movieReviewService.getMovieReviewById(reviewId)
@@ -57,6 +63,14 @@ public class MovieReviewController {
         return movieReviewService.deleteMovieReviewById(reviewId)
                 .map(m -> new ResponseEntity<>(
                         String.format("Movie review with id %s deleted successfully!", reviewId), HttpStatus.OK)
+                );
+    }
+
+    @DeleteMapping("/all/{movieInfoId}")
+    public Mono<ResponseEntity<String>> deleteAllMovieReviewsByMovieInfoId(@PathVariable @NotNull String movieInfoId) {
+        return movieReviewService.deleteAllMovieReviewsByMovieInfoId(movieInfoId)
+                .map(m -> new ResponseEntity<>(
+                        String.format("All movie reviews with movieInfoId %s deleted successfully!", movieInfoId), HttpStatus.OK)
                 );
     }
 

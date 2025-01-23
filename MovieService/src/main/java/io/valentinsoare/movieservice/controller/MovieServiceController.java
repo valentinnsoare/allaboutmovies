@@ -4,6 +4,7 @@ import io.valentinsoare.movieservice.client.MovieInfoRestClient;
 import io.valentinsoare.movieservice.client.MovieReviewRestClient;
 import io.valentinsoare.movieservice.domain.Movie;
 import io.valentinsoare.movieservice.domain.MovieInfo;
+import io.valentinsoare.movieservice.domain.MovieReview;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,24 @@ public class MovieServiceController {
                 );
     }
 
-    @GetMapping(value = "/stream", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/stream/movieinfos", produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<MovieInfo> getStreamMovieInfos() {
         return movieInfoRestClient.getStreamMovieInfos();
+    }
+
+    @GetMapping(value = "/stream/movieInfos/id/{movieInfoId}}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieInfo> getStreamMovieInfoByIdIfUpdated(@PathVariable @NotNull String movieInfoId) {
+        return movieInfoRestClient.getStreamMovieInfosByIdIfUpdated(movieInfoId);
+    }
+
+    @GetMapping(value = "/stream/moviereviews", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieReview> getStreamMovieReviews() {
+        return movieReviewRestClient.getStreamMovieReviews();
+    }
+
+    @GetMapping(value = "/stream/moviereviews/id/{movieInfoId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieReview> getStreamMovieReviewsByMovieInfoIdIfUpdated(@PathVariable @NotNull String movieInfoId) {
+        return movieReviewRestClient.getStreamMovieReviewsByMovieInfoIdIfUpdated(movieInfoId);
     }
 
     @PostMapping
@@ -52,5 +68,11 @@ public class MovieServiceController {
                             .collectList()
                             .map(movieReviews -> new Movie(movieInfo, movieReviews));
                 });
+    }
+
+    @DeleteMapping("/id/{movieId}")
+    public Mono<String> deleteMovieById(@PathVariable @NotNull String movieId) {
+        return movieInfoRestClient.deleteMovieInfoById(movieId)
+                .then(movieReviewRestClient.deleteAllReviewsByMovieInfoId(movieId));
     }
 }

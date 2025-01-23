@@ -72,7 +72,14 @@ public class MovieInfoController {
             @RequestBody @Valid MovieInfo movieInfo
     ) {
         return movieInfoService.updateMovieInfoById(movieId, movieInfo)
+                .doOnNext(movieInfoSink::tryEmitNext)
                 .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
+    }
+
+    @GetMapping(value = "/stream/id/{movieInfoId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieInfo> getStreamMovieInfosByIdIfUpdated(@PathVariable @NotNull String movieInfoId) {
+        return movieInfoSink.asFlux()
+                .filter(movieInfo -> movieInfo.getId().equals(movieInfoId));
     }
 
     @DeleteMapping("/id/{movieId}")

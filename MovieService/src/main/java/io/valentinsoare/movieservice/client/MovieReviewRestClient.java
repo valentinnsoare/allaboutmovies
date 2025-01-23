@@ -74,4 +74,59 @@ public class MovieReviewRestClient {
                 .bodyToMono(MovieReview.class)
                 .retryWhen(RetryUtil.retrySpec());
     }
+
+    public Mono<String> deleteAllReviewsByMovieInfoId(String movieInfoId) {
+        String url = UriComponentsBuilder.fromUriString(urlMovieReviewService)
+                .path(String.format("/all/%s", movieInfoId))
+                .buildAndExpand()
+                .toUriString();
+
+        return webClient.delete()
+                .uri(url)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieReviewClientException(
+                                errorBody, clientResponse.statusCode().value())))
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieReviewServerException(
+                                String.format("Server exception in MovieReviewService: %s",
+                                        errorBody)
+                        )))
+                )
+                .bodyToMono(String.class)
+                .retryWhen(RetryUtil.retrySpec());
+    }
+
+    private Flux<MovieReview> getMovieReviewFlux(String url) {
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieReviewClientException(
+                                errorBody, clientResponse.statusCode().value())))
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieReviewServerException(
+                                String.format("Server exception in MovieReviewService: %s",
+                                        errorBody)
+                        )))
+                )
+                .bodyToFlux(MovieReview.class)
+                .retryWhen(RetryUtil.retrySpec());
+    }
+
+    public Flux<MovieReview> getStreamMovieReviews() {
+        String url = urlMovieReviewService.concat("/stream");
+        return getMovieReviewFlux(url);
+    }
+
+    public Flux<MovieReview> getStreamMovieReviewsByMovieInfoIdIfUpdated(String movieInfoId) {
+        String url = UriComponentsBuilder.fromUriString(urlMovieReviewService)
+                .path(String.format("/stream/id/%s", movieInfoId))
+                .buildAndExpand()
+                .toUriString();
+
+        return getMovieReviewFlux(url);
+    }
 }

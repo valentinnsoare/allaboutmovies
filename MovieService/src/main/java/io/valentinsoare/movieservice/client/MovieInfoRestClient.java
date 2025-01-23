@@ -51,9 +51,7 @@ public class MovieInfoRestClient {
                 .retryWhen(RetryUtil.retrySpec());
     }
 
-    public Flux<MovieInfo> getStreamMovieInfos() {
-        String url = urlMovieInfoService.concat("/stream");
-
+    private Flux<MovieInfo> getMovieInfoFlux(String url) {
         return webClient.get()
                 .uri(url)
                 .retrieve()
@@ -65,7 +63,18 @@ public class MovieInfoRestClient {
                                 String.format("Server exception in MovieInfoService: %s",
                                         errorBody)))
                         ))
-                .bodyToFlux(MovieInfo.class);
+                .bodyToFlux(MovieInfo.class)
+                .retryWhen(RetryUtil.retrySpec());
+    }
+
+    public Flux<MovieInfo> getStreamMovieInfos() {
+        String url = urlMovieInfoService.concat("/stream");
+        return getMovieInfoFlux(url);
+    }
+
+    public Flux<MovieInfo> getStreamMovieInfosByIdIfUpdated(String movieInfoId) {
+        String url = urlMovieInfoService.concat(String.format("/stream/id/%s", movieInfoId));
+        return getMovieInfoFlux(url);
     }
 
     public Mono<MovieInfo> addMovieInfo(MovieInfo movieInfo) {
@@ -78,6 +87,31 @@ public class MovieInfoRestClient {
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> clientResponse.bodyToMono(String.class)
                         .flatMap(errorBody -> Mono.error(new MovieInfoClientException(
                                 errorBody, String.valueOf(clientResponse.statusCode().value())))))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieInfoServerException(
+                                String.format("Server exception in MovieInfoService: %s",
+                                        errorBody)))
+                        ))
+                .bodyToMono(MovieInfo.class)
+                .retryWhen(RetryUtil.retrySpec());
+    }
+
+    public Mono<MovieInfo> deleteMovieInfoById(String movieId) {
+        String url = urlMovieInfoService.concat("/id/{movieId}");
+
+        return webClient.delete()
+                .uri(url, movieId)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    if (clientResponse.statusCode().equals(HttpStatus.NOT_FOUND)) {
+                        return Mono.error(new MovieInfoClientException(String.format("MovieInfo not found with id: %s", movieId),
+                                String.valueOf(clientResponse.statusCode().value())));
+                    }
+
+                    return clientResponse.bodyToMono(String.class)
+                            .flatMap(errorBody -> Mono.error(new MovieInfoClientException(
+                                    errorBody, String.valueOf(clientResponse.statusCode().value()))));
+                })
                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
                         .flatMap(errorBody -> Mono.error(new MovieInfoServerException(
                                 String.format("Server exception in MovieInfoService: %s",

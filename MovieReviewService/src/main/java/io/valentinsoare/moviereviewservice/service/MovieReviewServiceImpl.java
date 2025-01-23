@@ -64,6 +64,15 @@ public class MovieReviewServiceImpl implements MovieReviewService {
 
     @Override
     @Transactional
+    public Mono<String> deleteAllMovieReviewsByMovieInfoId(String movieInfoId) {
+        return movieReviewRepository.deleteAllByMovieInfoId(movieInfoId)
+                .switchIfEmpty(
+                        Mono.error(new NoMovieReviewException("movieReview"))
+                );
+    }
+
+    @Override
+    @Transactional
     public Mono<MovieReview> deleteMovieReviewById(String reviewId) {
         return movieReviewRepository.findById(reviewId)
                 .switchIfEmpty(

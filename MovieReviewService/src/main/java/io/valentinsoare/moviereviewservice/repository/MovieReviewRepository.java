@@ -20,4 +20,7 @@ public interface MovieReviewRepository extends ReactiveMongoRepository<MovieRevi
 
     @Query("{ 'movieInfoId' : ?0 }.count()")
     Mono<Long> countAllReviewsByMovieInfoId(String movieInfoId);
+
+    @Query("{ 'movieInfoId' : ?0 }")
+    Mono<String> deleteAllByMovieInfoId(String movieInfoId);
 }
