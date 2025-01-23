@@ -1,15 +1,14 @@
 package io.valentinsoare.movieservice.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieReviewClientException {
+public class MovieReviewClientException extends RuntimeException {
     String message;
     Integer statusCode;
 }

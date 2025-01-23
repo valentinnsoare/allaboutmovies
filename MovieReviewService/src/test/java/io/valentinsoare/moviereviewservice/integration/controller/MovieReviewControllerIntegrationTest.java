@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 import java.util.Arrays;
 import java.util.List;
@@ -82,6 +84,26 @@ public class MovieReviewControllerIntegrationTest {
                 .isCreated()
                 .expectBody(MovieReview.class)
                 .isEqualTo(movieReview);
+    }
+
+    @Test
+    void getStreamMovieReviews() {
+        addMovieReview();
+
+        Flux<MovieReview> responseFromStream = webTestClient.get()
+                .uri("/api/v1/movieReviews/stream")
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .returnResult(MovieReview.class)
+                .getResponseBody();
+
+        StepVerifier.create(responseFromStream)
+                .assertNext(movieReview -> {
+                    assert movieReview != null;
+                })
+                .thenCancel()
+                .verify();
     }
 
     @Test

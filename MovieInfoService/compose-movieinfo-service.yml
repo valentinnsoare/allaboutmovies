@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  movie-info-service:
+    image: movie-info-service
+    container_name: movie-info-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./movie-info-service:/app
+    depends_on:
+      - mongodb_movie_service
+    environment:
+      MONGO_DB_HOST: mongodb
+      MONGO_DB_PORT: 27017
+      MONGO_DB_DATABASE: allaboutmovies
+      MONGO_DB_USERNAME: admin
+      MONGO_DB_PASSWORD: admin
+      SPRING_DATA_MONGODB_URI: "mongodb://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@${MONGO_DB_HOST}:${MONGO_DB_PORT}/${MONGO_DB_DATABASE}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+        max-file: "12"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

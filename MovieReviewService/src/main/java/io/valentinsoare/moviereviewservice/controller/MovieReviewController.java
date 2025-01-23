@@ -6,25 +6,41 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 @RestController
 @RequestMapping("/api/v1/movieReviews")
 public class MovieReviewController {
     private final MovieReviewService movieReviewService;
+    private final Sinks.Many<MovieReview> movieReviewSink;
 
     @Autowired
     public MovieReviewController(MovieReviewService movieReviewService) {
         this.movieReviewService = movieReviewService;
+        this.movieReviewSink = Sinks.many().multicast().onBackpressureBuffer();
     }
 
     @PostMapping
     public Mono<ResponseEntity<MovieReview>> addMovieReview(@RequestBody @Valid MovieReview movieReview) {
         return movieReviewService.addMovieReview(movieReview)
+                .doOnNext(movieReviewSink::tryEmitNext)
                 .map(m -> new ResponseEntity<>(m, HttpStatus.CREATED));
+    }
+
+    @GetMapping(value = "/stream", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieReview> getStreamMovieReviews() {
+        return movieReviewSink.asFlux();
+    }
+
+    @GetMapping(value = "/stream/id/{movieInfoId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieReview> getStreamMovieReviewsByMovieInfoId(@PathVariable @NotNull String movieInfoId) {
+        return movieReviewSink.asFlux()
+                .filter(m -> m.getMovieInfoId().equals(movieInfoId));
     }
 
     @GetMapping("/id/{reviewId}")
@@ -47,6 +63,14 @@ public class MovieReviewController {
         return movieReviewService.deleteMovieReviewById(reviewId)
                 .map(m -> new ResponseEntity<>(
                         String.format("Movie review with id %s deleted successfully!", reviewId), HttpStatus.OK)
+                );
+    }
+
+    @DeleteMapping("/all/{movieInfoId}")
+    public Mono<ResponseEntity<String>> deleteAllMovieReviewsByMovieInfoId(@PathVariable @NotNull String movieInfoId) {
+        return movieReviewService.deleteAllMovieReviewsByMovieInfoId(movieInfoId)
+                .map(m -> new ResponseEntity<>(
+                        String.format("All movie reviews with movieInfoId %s deleted successfully!", movieInfoId), HttpStatus.OK)
                 );
     }
 

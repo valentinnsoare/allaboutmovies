@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -108,6 +110,26 @@ public class MovieInfoControllerIntegrationTest {
                     assert movieInfo.getId().equals(movieInfoId);
                     assert movieInfo.getReleaseDate().equals(LocalDate.parse("2008-07-18"));
                 });
+    }
+
+    @Test
+    void testGetAllMovieInfosStream() {
+        testAddMovieInfo();
+
+        Flux<MovieInfo> answerFromStreamEndpoint = webTestClient.get()
+                .uri("/api/v1/movieInfos/stream")
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .returnResult(MovieInfo.class)
+                .getResponseBody();
+
+        StepVerifier.create(answerFromStreamEndpoint)
+                .assertNext(movieInfo -> {
+                    assert movieInfo != null;
+                })
+                .thenCancel()
+                .verify();
     }
 
     @Test

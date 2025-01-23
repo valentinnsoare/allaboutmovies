@@ -9,6 +9,9 @@ spring:
       database: all-about-movies
       username: admin
       password: admin
+#  docker:
+#    compose:
+#      file: ./MovieInfoService/compose-movieinfo-service.yml
 
 server:
   port: ${MOVIE_INFO_APPLICATION_PORT:8082}
