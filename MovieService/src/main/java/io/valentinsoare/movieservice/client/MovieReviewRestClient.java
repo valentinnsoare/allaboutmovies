@@ -53,4 +53,25 @@ public class MovieReviewRestClient {
                 .bodyToFlux(MovieReview.class)
                 .retryWhen(RetryUtil.retrySpec());
     }
+
+    public Mono<MovieReview> addMovieReview(MovieReview movieReview) {
+        String url = urlMovieReviewService;
+
+        return webClient.post()
+                .uri(url)
+                .body(Mono.just(movieReview), MovieReview.class)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieReviewClientException(
+                                errorBody, clientResponse.statusCode().value())))
+                )
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieReviewServerException(
+                                String.format("Server exception in MovieReviewService: %s",
+                                        errorBody)
+                        )))
+                )
+                .bodyToMono(MovieReview.class)
+                .retryWhen(RetryUtil.retrySpec());
+    }
 }

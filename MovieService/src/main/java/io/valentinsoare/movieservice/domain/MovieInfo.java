@@ -20,20 +20,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovieInfo {
-
     private String id;
 
-    @NotBlank(message = "Name is mandatory")
-    @Size(max = 100, message = "Name should have at most 100 characters")
+    @NotBlank(message = "Name is mandatory.")
+    @Size(max = 100, message = "Name should have at most 100 characters.")
     private String name;
 
-    @NotNull(message = "Year is mandatory")
-    @Min(value = 1900, message = "Year should be at least 1900")
+    @NotNull(message = "Year is mandatory.")
+    @Min(value = 1900, message = "Year should be at least 1900.")
     private Integer year;
 
-    @Size(max = 100, message = "Cast should have at most 100 names")
-    private List<@NotBlank(message = "Name included in the cast list should not be blank") String> cast;
+    @Size(max = 100, message = "Cast should have at most 100 names.")
+    private List<@NotBlank(message = "Name included in the cast list should not be blank.") String> cast;
 
-    @NotNull(message = "Release date is mandatory, must not be null")
+    @NotNull(message = "Release date is mandatory, must not be null.")
     private LocalDate releaseDate;
 }

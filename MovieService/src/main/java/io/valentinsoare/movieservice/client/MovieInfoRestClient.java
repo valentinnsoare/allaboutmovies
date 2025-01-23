@@ -67,4 +67,23 @@ public class MovieInfoRestClient {
                         ))
                 .bodyToFlux(MovieInfo.class);
     }
+
+    public Mono<MovieInfo> addMovieInfo(MovieInfo movieInfo) {
+        String url = urlMovieInfoService;
+
+        return webClient.post()
+                .uri(url)
+                .body(Mono.just(movieInfo), MovieInfo.class)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieInfoClientException(
+                                errorBody, String.valueOf(clientResponse.statusCode().value())))))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieInfoServerException(
+                                String.format("Server exception in MovieInfoService: %s",
+                                        errorBody)))
+                        ))
+                .bodyToMono(MovieInfo.class)
+                .retryWhen(RetryUtil.retrySpec());
+    }
 }
