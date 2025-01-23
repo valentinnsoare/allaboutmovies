@@ -3,9 +3,12 @@ package io.valentinsoare.movieservice.controller;
 import io.valentinsoare.movieservice.client.MovieInfoRestClient;
 import io.valentinsoare.movieservice.client.MovieReviewRestClient;
 import io.valentinsoare.movieservice.domain.Movie;
+import io.valentinsoare.movieservice.domain.MovieInfo;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -29,5 +32,10 @@ public class MovieServiceController {
                         .collectList()
                         .map(movieReviews -> new Movie(movieInfo, movieReviews))
                 );
+    }
+
+    @GetMapping(value = "/stream", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieInfo> getStreamMovieInfos() {
+        return movieInfoRestClient.getStreamMovieInfos();
     }
 }

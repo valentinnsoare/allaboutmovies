@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -47,7 +48,23 @@ public class MovieInfoRestClient {
                                         errorBody)))
                         ))
                 .bodyToMono(MovieInfo.class)
-//                .retry(3)
                 .retryWhen(RetryUtil.retrySpec());
+    }
+
+    public Flux<MovieInfo> getStreamMovieInfos() {
+        String url = urlMovieInfoService.concat("/stream");
+
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieInfoClientException(
+                                errorBody, String.valueOf(clientResponse.statusCode().value())))))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new MovieInfoServerException(
+                                String.format("Server exception in MovieInfoService: %s",
+                                        errorBody)))
+                        ))
+                .bodyToFlux(MovieInfo.class);
     }
 }

@@ -6,25 +6,35 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 @RestController
 @RequestMapping("/api/v1/movieReviews")
 public class MovieReviewController {
     private final MovieReviewService movieReviewService;
+    private final Sinks.Many<MovieReview> movieReviewSink;
 
     @Autowired
     public MovieReviewController(MovieReviewService movieReviewService) {
         this.movieReviewService = movieReviewService;
+        this.movieReviewSink = Sinks.many().multicast().onBackpressureBuffer();
     }
 
     @PostMapping
     public Mono<ResponseEntity<MovieReview>> addMovieReview(@RequestBody @Valid MovieReview movieReview) {
         return movieReviewService.addMovieReview(movieReview)
+                .doOnNext(movieReviewSink::tryEmitNext)
                 .map(m -> new ResponseEntity<>(m, HttpStatus.CREATED));
+    }
+
+    @GetMapping(value = "/stream", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<MovieReview> getStreamMovieReviews() {
+        return movieReviewSink.asFlux();
     }
 
     @GetMapping("/id/{reviewId}")
