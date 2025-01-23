@@ -42,7 +42,7 @@ public class MovieServiceController {
         return movieInfoRestClient.getStreamMovieInfos();
     }
 
-    @GetMapping(value = "/stream/movieInfos/id/{movieInfoId}}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/stream/movieInfos/id/{movieInfoId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<MovieInfo> getStreamMovieInfoByIdIfUpdated(@PathVariable @NotNull String movieInfoId) {
         return movieInfoRestClient.getStreamMovieInfosByIdIfUpdated(movieInfoId);
     }
